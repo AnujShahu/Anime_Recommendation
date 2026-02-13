@@ -1,18 +1,29 @@
 import pandas as pd
+import os
 
 # Load dataset once
-data = pd.read_csv("data/anime_with_selected_genres.csv")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+csv_path = os.path.join(BASE_DIR, "data", "anime_with_selected_genres.csv")
 
-# Clean columns
+data = pd.read_csv(csv_path)
+
+# Clean columns safely
 data["genre"] = data["genre"].fillna("")
 data["score"] = pd.to_numeric(data["score"], errors="coerce").fillna(0)
 data["popularity"] = pd.to_numeric(data["popularity"], errors="coerce").fillna(999999)
+data["title"] = data["title"].astype(str)
 
 def get_recommendations(anime_title):
-    if anime_title not in data["title"].values:
+    if not anime_title:
         return []
 
-    selected = data[data["title"] == anime_title].iloc[0]
+    # Case-insensitive match
+    matched = data[data["title"].str.lower() == anime_title.lower()]
+    
+    if matched.empty:
+        return []
+
+    selected = matched.iloc[0]
 
     selected_genre = selected["genre"].split(",")[0]
     selected_type = selected["type"]
@@ -20,7 +31,7 @@ def get_recommendations(anime_title):
     filtered = data[
         (data["genre"].str.contains(selected_genre, na=False)) &
         (data["type"] == selected_type) &
-        (data["title"] != anime_title)
+        (data["title"].str.lower() != anime_title.lower())
     ]
 
     filtered = filtered.sort_values(
@@ -33,5 +44,3 @@ def get_recommendations(anime_title):
     ]
 
     return recommendations.to_dict(orient="records")
-
-
