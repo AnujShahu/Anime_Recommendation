@@ -1,2 +1,5 @@
-gunicorn run:app
-
+flask
+pandas
+numpy
+scikit-learn
+gunicorn
