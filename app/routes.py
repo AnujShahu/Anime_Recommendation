@@ -1,15 +1,14 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request
 from .recommender import get_recommendations
 
-main = Blueprint("main", __name__)
+main = Blueprint('main', __name__)
 
-@main.route("/")
+@main.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template("index.html")
+    recommendations = []
 
-@main.route("/recommend", methods=["POST"])
-def recommend():
-    anime_title = request.json.get("anime")
-    recommendations = get_recommendations(anime_title)
-    return jsonify(recommendations)
+    if request.method == 'POST':
+        genre = request.form.get('genre')
+        recommendations = get_recommendations(genre)
 
+    return render_template('index.html', recommendations=recommendations)
