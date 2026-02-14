@@ -1,20 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AI Anime Recommendation System</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Anime Recommendation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-<h1>🎌 Hybrid Anime Recommendation System</h1>
+<h1>Anime Recommendation System</h1>
 
-<input type="text" id="animeInput" placeholder="Enter exact anime title">
-<button onclick="getRecommendations()">Recommend</button>
+<form method="POST">
+    <input type="text" name="anime_name" placeholder="Enter Anime Name" required>
+    <button type="submit">Search</button>
+</form>
 
-<div id="results"></div>
-
-<script src="/static/script.js"></script>
+{% if recommendations %}
+    <h2>Recommended Anime:</h2>
+    <ul>
+        {% for anime in recommendations %}
+            <li>
+                <strong>{{ anime.title }}</strong><br>
+                Genre: {{ anime.genre }}<br>
+                Score: {{ anime.score }}<br>
+                Popularity: {{ anime.popularity }}<br>
+                Type: {{ anime.type }}<br>
+                Episodes: {{ anime.episodes }}
+            </li>
+            <hr>
+        {% endfor %}
+    </ul>
+{% endif %}
 
 </body>
 </html>
-
