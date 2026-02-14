@@ -1,13 +1,13 @@
 import pandas as pd
 import os
 
-# Load dataset once
+# Locate CSV file properly
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 csv_path = os.path.join(BASE_DIR, "data", "anime_with_selected_genres.csv")
 
 data = pd.read_csv(csv_path)
 
-# Clean columns safely
+# Clean dataset
 data["genre"] = data["genre"].fillna("")
 data["score"] = pd.to_numeric(data["score"], errors="coerce").fillna(0)
 data["popularity"] = pd.to_numeric(data["popularity"], errors="coerce").fillna(999999)
@@ -17,9 +17,8 @@ def get_recommendations(anime_title):
     if not anime_title:
         return []
 
-    # Case-insensitive match
     matched = data[data["title"].str.lower() == anime_title.lower()]
-    
+
     if matched.empty:
         return []
 
@@ -40,7 +39,7 @@ def get_recommendations(anime_title):
     )
 
     recommendations = filtered.head(6)[
-        ["title", "genre", "score", "popularity", "type", "episodes", "image_url"]
+        ["title", "genre", "score", "popularity", "type", "episodes"]
     ]
 
     return recommendations.to_dict(orient="records")
