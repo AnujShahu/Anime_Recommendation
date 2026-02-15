@@ -48,22 +48,7 @@ This project allows users to:
 
 ---
 
-## 📂 Project Structure
 
-Anime_Recommendation/
-│
-├── run.py
-├── anime.db
-├── requirements.txt
-│
-├── app/
-│ ├── init.py
-│ ├── routes.py
-│ ├── templates/
-│ │ └── index.html
-│ └── static/
-│ ├── style.css
-│ └── script.js
 
 
 ✨ Features
