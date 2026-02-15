@@ -6,29 +6,83 @@
 </head>
 <body>
 
-<h1>Anime Recommendation System</h1>
+<div class="container">
 
-<form method="POST">
-    <input type="text" name="anime_name" placeholder="Enter Anime Name" required>
-    <button type="submit">Search</button>
-</form>
+    <h1 class="title">🎌 Anime Recommendation System</h1>
 
-{% if recommendations %}
-    <h2>Recommended Anime:</h2>
-    <ul>
-        {% for anime in recommendations %}
-            <li>
-                <strong>{{ anime.title }}</strong><br>
-                Genre: {{ anime.genre }}<br>
-                Score: {{ anime.score }}<br>
-                Popularity: {{ anime.popularity }}<br>
-                Type: {{ anime.type }}<br>
-                Episodes: {{ anime.episodes }}
-            </li>
-            <hr>
-        {% endfor %}
-    </ul>
-{% endif %}
+    <!-- TABS -->
+    <div class="tabs">
+        <button id="searchTab" class="tab active">Search by Name</button>
+        <button id="genreTab" class="tab">Browse by Genre</button>
+    </div>
+
+    <!-- SEARCH SECTION -->
+    <div id="searchSection">
+
+        <form method="POST" id="searchForm">
+
+            <div class="search-wrapper">
+                <input type="text"
+                       id="searchInput"
+                       name="anime_name"
+                       placeholder="Search Anime..."
+                       autocomplete="off"
+                       required>
+
+                <div id="suggestions" class="suggestions-box"></div>
+            </div>
+
+            <button type="submit" class="search-btn">Search</button>
+        </form>
+
+        <div id="loader" class="loader hidden"></div>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        {% if anime %}
+            <div class="anime-card main-anime">
+                <img src="{{ anime.image_url }}" class="anime-img">
+                <h2>{{ anime.title }}</h2>
+                <p><strong>Genres:</strong> {{ anime.genres }}</p>
+                <p><strong>Score:</strong> ⭐ {{ anime.score }}</p>
+                <p><strong>Episodes:</strong> {{ anime.episodes }}</p>
+            </div>
+        {% endif %}
+
+        {% if recommendations %}
+            <h2 class="recommend-title">Recommended Anime</h2>
+            <div class="recommend-grid">
+                {% for rec in recommendations %}
+                    <div class="anime-card">
+                        <img src="{{ rec.image_url }}" class="anime-img">
+                        <h3>{{ rec.title }}</h3>
+                        <p>{{ rec.genres }}</p>
+                        <p>⭐ {{ rec.score }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+
+    <!-- GENRE SECTION -->
+    <div id="genreSection" class="hidden">
+
+        <div id="genreContainer" class="genre-grid"></div>
+
+        <button id="genreSearchBtn" class="search-btn">
+            Find Anime
+        </button>
+
+        <div id="genreResults" class="recommend-grid"></div>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 
 </body>
 </html>
