@@ -1,45 +1,45 @@
+import sqlite3
 import pandas as pd
-import os
 
-# Locate CSV file properly
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-csv_path = os.path.join(BASE_DIR, "data", "anime_with_selected_genres.csv")
+DB_PATH = "anime.db"
 
-data = pd.read_csv(csv_path)
+def get_connection():
+    return sqlite3.connect(DB_PATH)
 
-# Clean dataset
-data["genre"] = data["genre"].fillna("")
-data["score"] = pd.to_numeric(data["score"], errors="coerce").fillna(0)
-data["popularity"] = pd.to_numeric(data["popularity"], errors="coerce").fillna(999999)
-data["title"] = data["title"].astype(str)
+def get_recommendations(anime_name):
+    conn = get_connection()
+    df = pd.read_sql_query("SELECT * FROM anime", conn)
 
-def get_recommendations(anime_title):
-    if not anime_title:
-        return []
+    df["title"] = df["title"].astype(str).str.strip()
 
-    matched = data[data["title"].str.lower() == anime_title.lower()]
+    anime_name = anime_name.strip().lower()
 
-    if matched.empty:
-        return []
+    match = df[df["title"].str.lower() == anime_name]
 
-    selected = matched.iloc[0]
+    if match.empty:
+        conn.close()
+        return None, None
 
-    selected_genre = selected["genre"].split(",")[0]
-    selected_type = selected["type"]
+    anime_row = match.iloc[0]
 
-    filtered = data[
-        (data["genre"].str.contains(selected_genre, na=False)) &
-        (data["type"] == selected_type) &
-        (data["title"].str.lower() != anime_title.lower())
-    ]
+    if not anime_row["genres"]:
+        conn.close()
+        return anime_row, pd.DataFrame()
 
-    filtered = filtered.sort_values(
-        by=["score", "popularity"],
-        ascending=[False, True]
-    )
+    genres = [g.strip().lower() for g in anime_row["genres"].split(",")]
 
-    recommendations = filtered.head(6)[
-        ["title", "genre", "score", "popularity", "type", "episodes"]
-    ]
+    def has_common_genre(g):
+        if not g:
+            return False
+        g = g.lower()
+        return any(genre in g for genre in genres)
 
-    return recommendations.to_dict(orient="records")
+    recommendations = df[df["genres"].apply(has_common_genre)]
+
+    recommendations = recommendations[
+        recommendations["title"].str.lower() != anime_name
+    ].head(5)
+
+    conn.close()
+
+    return anime_row, recommendations
