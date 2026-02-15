@@ -1,33 +1,220 @@
 body {
-    font-family: Arial;
-    background-color: #111;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     color: white;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 60px 20px;
     text-align: center;
 }
 
-h1 {
-    margin-top: 40px;
+.title {
+    font-size: 3rem;
+    margin-bottom: 30px;
 }
 
-input {
-    padding: 10px;
-    width: 300px;
-    border-radius: 5px;
+/* ===== TABS ===== */
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
 }
 
-button {
-    padding: 10px 15px;
-    background-color: orange;
+.tab {
+    padding: 12px 25px;
+    margin: 0 10px;
     border: none;
-    border-radius: 5px;
+    border-radius: 30px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    transition: 0.3s;
+}
+
+.tab.active {
+    background: #ff4757;
+}
+
+/* ===== SEARCH ===== */
+.search-wrapper {
+    position: relative;
+    width: 60%;
+    margin: 0 auto 20px auto;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 14px;
+    border-radius: 30px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+}
+
+#searchInput:focus {
+    box-shadow: 0 0 15px #ff4757;
+}
+
+.search-btn {
+    padding: 14px 35px;
+    border-radius: 30px;
+    border: none;
+    background: linear-gradient(45deg, #ff4757, #ff6b81);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.search-btn:hover {
+    transform: scale(1.05);
+}
+
+/* ===== CARDS ===== */
+.anime-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    padding: 20px;
+    margin: 15px;
+    border-radius: 20px;
+    transition: 0.3s ease;
+}
+
+.anime-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 20px rgba(255,71,87,0.5);
+}
+
+.main-anime {
+    background: rgba(255, 71, 87, 0.35);
+}
+
+.recommend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.recommend-title {
+    margin-top: 40px;
+    font-size: 1.8rem;
+}
+
+.anime-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 15px;
+    margin-bottom: 10px;
+}
+.active-suggestion {
+    background: #ff4757;
+    color: white;
+}
+.suggestions-box {
+    position: absolute;
+    width: 100%;
+    background: #1c1c1c;
+    border-radius: 15px;
+    max-height: 250px;
+    overflow-y: auto;
+    margin-top: 8px;
+    text-align: left;
+    z-index: 1000;
+
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: all 0.2s ease;
+}
+
+.suggestions-box:not(:empty) {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.suggestion-item {
+    padding: 12px;
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+
+.suggestion-item:hover,
+.active-suggestion {
+    background: #ff4757;
+    color: white;
+}
+
+.suggestion-item strong {
+    color: #ff6b81;
+}
+
+
+/* ===== GENRE GRID ===== */
+.genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.genre-item {
+    background: rgba(255,255,255,0.1);
+    padding: 8px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.genre-item.selected {
+    background: #ff4757;
+}
+
+/* ===== AUTOCOMPLETE ===== */
+.suggestions-box {
+    position: absolute;
+    width: 100%;
+    background: #1c1c1c;
+    border-radius: 15px;
+    max-height: 220px;
+    overflow-y: auto;
+    margin-top: 8px;
+    text-align: left;
+    z-index: 1000;
+}
+
+.suggestion-item {
+    padding: 12px;
     cursor: pointer;
 }
 
-button:hover {
-    background-color: darkorange;
+.suggestion-item:hover {
+    background: rgba(255,71,87,0.5);
 }
 
-li {
-    list-style: none;
-    margin-bottom: 20px;
+/* ===== LOADER ===== */
+.loader {
+    border: 6px solid rgba(255,255,255,0.2);
+    border-top: 6px solid #ff4757;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    margin: 20px auto;
+    animation: spin 1s linear infinite;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+.error {
+    color: #ff6b81;
 }
