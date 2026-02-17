@@ -2,8 +2,11 @@ from flask import Flask
 import os
 import psycopg2
 import sqlalchemy
+
+# ✅ ADD THIS LINE
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
 def create_app():
-    # Get requirements.txtproject root directory
     base_dir = os.path.abspath(os.path.dirname(__file__))
     template_dir = os.path.join(base_dir, "..", "templates")
     static_dir = os.path.join(base_dir, "..", "static")
@@ -16,9 +19,10 @@ def create_app():
 
     from .routes import main
     app.register_blueprint(main)
-    
 
     return app
+
+
 def init_db():
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
@@ -34,5 +38,6 @@ def init_db():
     conn.commit()
     cur.close()
     conn.close()
+
 
 init_db()
