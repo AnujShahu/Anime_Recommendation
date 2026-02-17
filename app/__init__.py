@@ -1,6 +1,7 @@
 from flask import Flask
 import os
-
+import psycopg2
+import sqlalchemy
 def create_app():
     # Get requirements.txtproject root directory
     base_dir = os.path.abspath(os.path.dirname(__file__))
