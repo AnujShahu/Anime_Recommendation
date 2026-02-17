@@ -3,6 +3,7 @@ body {
     font-family: 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     color: white;
+    transition: background 0.4s ease, color 0.4s ease;
 }
 
 .container {
@@ -10,11 +11,31 @@ body {
     margin: auto;
     padding: 60px 20px;
     text-align: center;
+    position: relative;
 }
 
 .title {
     font-size: 3rem;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+}
+
+/* ===== THEME TOGGLE ===== */
+.theme-toggle {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    background: #ffffff;
+    color: #111;
+    transition: 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.05);
 }
 
 /* ===== TABS ===== */
@@ -112,67 +133,6 @@ body {
     border-radius: 15px;
     margin-bottom: 10px;
 }
-.active-suggestion {
-    background: #ff4757;
-    color: white;
-}
-.suggestions-box {
-    position: absolute;
-    width: 100%;
-    background: #1c1c1c;
-    border-radius: 15px;
-    max-height: 250px;
-    overflow-y: auto;
-    margin-top: 8px;
-    text-align: left;
-    z-index: 1000;
-
-    opacity: 0;
-    transform: translateY(-5px);
-    transition: all 0.2s ease;
-}
-
-.suggestions-box:not(:empty) {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.suggestion-item {
-    padding: 12px;
-    cursor: pointer;
-    transition: 0.15s ease;
-}
-
-.suggestion-item:hover,
-.active-suggestion {
-    background: #ff4757;
-    color: white;
-}
-
-.suggestion-item strong {
-    color: #ff6b81;
-}
-
-
-/* ===== GENRE GRID ===== */
-.genre-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.genre-item {
-    background: rgba(255,255,255,0.1);
-    padding: 8px;
-    border-radius: 20px;
-    cursor: pointer;
-    text-align: center;
-}
-
-.genre-item.selected {
-    background: #ff4757;
-}
 
 /* ===== AUTOCOMPLETE ===== */
 .suggestions-box {
@@ -192,8 +152,34 @@ body {
     cursor: pointer;
 }
 
-.suggestion-item:hover {
-    background: rgba(255,71,87,0.5);
+.suggestion-item:hover,
+.active-suggestion {
+    background: #ff4757;
+    color: white;
+}
+
+.suggestion-item strong {
+    color: #ff6b81;
+}
+
+/* ===== GENRE GRID ===== */
+.genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.genre-item {
+    background: rgba(255,255,255,0.1);
+    padding: 8px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.genre-item.selected {
+    background: #ff4757;
 }
 
 /* ===== LOADER ===== */
@@ -217,4 +203,49 @@ body {
 
 .error {
     color: #ff6b81;
+}
+
+/* ================= LIGHT MODE ================= */
+body.light-mode {
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    color: #111;
+}
+
+body.light-mode .anime-card {
+    background: rgba(0, 0, 0, 0.05);
+    color: #111;
+}
+
+body.light-mode .main-anime {
+    background: rgba(255, 71, 87, 0.15);
+}
+
+body.light-mode .tab {
+    background: rgba(0,0,0,0.08);
+    color: #111;
+}
+
+body.light-mode .tab.active {
+    background: #ff4757;
+    color: white;
+}
+
+body.light-mode #searchInput {
+    background: #ffffff;
+    color: #111;
+}
+
+body.light-mode .suggestions-box {
+    background: #ffffff;
+    color: #111;
+}
+
+body.light-mode .genre-item {
+    background: rgba(0,0,0,0.08);
+    color: #111;
+}
+
+body.light-mode .genre-item.selected {
+    background: #ff4757;
+    color: white;
 }
