@@ -2,7 +2,7 @@ from flask import Flask
 import os
 
 def create_app():
-    # Get project root directory
+    # Get requirements.txtproject root directory
     base_dir = os.path.abspath(os.path.dirname(__file__))
     template_dir = os.path.join(base_dir, "..", "templates")
     static_dir = os.path.join(base_dir, "..", "static")
