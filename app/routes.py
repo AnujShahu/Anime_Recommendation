@@ -11,6 +11,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, "anime.db")
 
 
+
 # ================= HOME =================
 @main.route("/", methods=["GET", "POST"])
 def home():

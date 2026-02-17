@@ -1,4 +1,6 @@
-import sqlite3
+import os
+import psycopg2
+import sqlalchemy
 import pandas as pd
 import os
 
@@ -13,7 +15,10 @@ df = pd.read_csv(csv_path)
 
 # Create SQLite database
 db_path = os.path.join(BASE_DIR, "anime.db")
-conn = sqlite3.connect(db_path)
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+engine = sqlalchemy.create_engine(DATABASE_URL)
 
 df.to_sql("anime", conn, if_exists="replace", index=False)
 

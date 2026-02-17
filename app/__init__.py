@@ -15,5 +15,23 @@ def create_app():
 
     from .routes import main
     app.register_blueprint(main)
+    
 
     return app
+def init_db():
+    conn = psycopg2.connect(DATABASE_URL)
+    cur = conn.cursor()
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS anime (
+        id SERIAL PRIMARY KEY,
+        name TEXT,
+        genres TEXT
+    )
+    """)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+init_db()
