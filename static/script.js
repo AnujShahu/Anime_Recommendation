@@ -14,12 +14,35 @@ document.addEventListener("DOMContentLoaded", function () {
     const genreResults = document.getElementById("genreResults");
     const genreSearchBtn = document.getElementById("genreSearchBtn");
 
+    const themeToggle = document.getElementById("themeToggle");
+
     let animeTitles = [];
     let selectedGenres = [];
     let currentFocus = -1;
     let debounceTimer;
 
+    /* ================= DARK MODE TOGGLE ================= */
+
+    // Load saved theme
+    if (localStorage.getItem("theme") === "light") {
+        document.body.classList.add("light-mode");
+        themeToggle.textContent = "☀ Light Mode";
+    }
+
+    themeToggle.addEventListener("click", function () {
+        document.body.classList.toggle("light-mode");
+
+        if (document.body.classList.contains("light-mode")) {
+            localStorage.setItem("theme", "light");
+            themeToggle.textContent = "☀ Light Mode";
+        } else {
+            localStorage.setItem("theme", "dark");
+            themeToggle.textContent = "🌙 Dark Mode";
+        }
+    });
+
     /* ================= TAB SWITCH ================= */
+
     searchTab.addEventListener("click", function () {
         searchTab.classList.add("active");
         genreTab.classList.remove("active");
@@ -35,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     /* ================= LOAD TITLES ================= */
+
     fetch("/get_anime_titles")
         .then(res => res.json())
         .then(data => {
@@ -42,13 +66,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
     /* ================= GOOGLE-LIKE AUTOCOMPLETE ================= */
+
     searchInput.addEventListener("input", function () {
-
         clearTimeout(debounceTimer);
-
         debounceTimer = setTimeout(() => {
-            showSuggestions(this.value);
-        }, 150);
+            showSuggestions(this.value.trim());
+        }, 120);
     });
 
     function showSuggestions(query) {
@@ -67,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }))
             .filter(item => item.score > 0)
             .sort((a, b) => b.score - a.score)
-            .slice(0, 7);
+            .slice(0, 8);
 
         ranked.forEach(item => {
 
@@ -88,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function calculateScore(title, input) {
 
         if (title.startsWith(input)) return 100;
-        if (title.includes(input)) return 50;
+        if (title.includes(input)) return 60;
 
         let matches = 0;
         for (let char of input) {
@@ -104,6 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /* ================= KEYBOARD CONTROL ================= */
+
     searchInput.addEventListener("keydown", function (e) {
 
         let items = suggestionsBox.getElementsByClassName("suggestion-item");
@@ -121,10 +145,12 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         else if (e.key === "Enter") {
+
             if (currentFocus > -1 && items.length > 0) {
                 e.preventDefault();
                 items[currentFocus].click();
             }
+            // else allow normal form submit
         }
 
         else if (e.key === "Escape") {
@@ -133,13 +159,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function addActive(items) {
+
         removeActive(items);
 
         if (currentFocus >= items.length) currentFocus = 0;
         if (currentFocus < 0) currentFocus = items.length - 1;
 
         items[currentFocus].classList.add("active-suggestion");
-        items[currentFocus].scrollIntoView({ block: "nearest" });
+
+        items[currentFocus].scrollIntoView({
+            block: "nearest",
+            behavior: "smooth"
+        });
     }
 
     function removeActive(items) {
@@ -148,13 +179,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    document.addEventListener("click", function(e) {
+    document.addEventListener("click", function (e) {
         if (!e.target.closest(".search-wrapper")) {
             suggestionsBox.innerHTML = "";
         }
     });
 
     /* ================= LOAD GENRES ================= */
+
     fetch("/get_genres")
         .then(res => res.json())
         .then(genres => {
@@ -166,6 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 div.textContent = genre;
 
                 div.onclick = function () {
+
                     div.classList.toggle("selected");
 
                     if (selectedGenres.includes(genre)) {
@@ -181,6 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
     /* ================= SEARCH BY GENRE ================= */
+
     genreSearchBtn.addEventListener("click", function () {
 
         fetch("/search_by_genres", {
@@ -207,6 +241,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         <p>⭐ ${anime.score}</p>
                     </div>
                 `;
+            });
+
+            genreResults.scrollIntoView({
+                behavior: "smooth"
             });
         });
     });
