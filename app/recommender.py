@@ -17,7 +17,7 @@ def get_recommendations(anime_name):
 
     anime_name = anime_name.strip().lower()
 
-    match = df[df["title"].str.lower() == anime_name]
+match = df[df["title"].str.lower().str.contains(anime_name)]
 
     if match.empty:
         conn.close()
