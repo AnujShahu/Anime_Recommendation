@@ -1,14 +1,3 @@
-import sqlite3
-import pandas as pd
-
-import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_PATH = os.path.join(BASE_DIR, "anime.db")
-
-def get_connection():
-    return sqlite3.connect(DB_PATH)
-
 def get_recommendations(anime_name):
     conn = get_connection()
     df = pd.read_sql_query("SELECT * FROM anime", conn)
@@ -17,7 +6,11 @@ def get_recommendations(anime_name):
 
     anime_name = anime_name.strip().lower()
 
-match = df[df["title"].str.lower().str.contains(anime_name)]
+    if not anime_name:
+        conn.close()
+        return None, None
+
+    match = df[df["title"].str.lower().str.contains(anime_name, na=False)]
 
     if match.empty:
         conn.close()
