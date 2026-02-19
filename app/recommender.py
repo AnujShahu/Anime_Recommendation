@@ -1,9 +1,12 @@
+import pandas as pd
+from .database import get_connection   # adjust if your file name is different
+
+
 def get_recommendations(anime_name):
     conn = get_connection()
     df = pd.read_sql_query("SELECT * FROM anime", conn)
 
     df["title"] = df["title"].astype(str).str.strip()
-
     anime_name = anime_name.strip().lower()
 
     if not anime_name:
