@@ -47,22 +47,6 @@ def get_anime_titles():
     return jsonify({"titles": titles})
 
 
-# ✅ GET ALL GENRES
-@main.route("/get_genres")
-def get_genres():
-    conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql_query("SELECT genres FROM anime", conn)
-    conn.close()
-
-    all_genres = set()
-
-    for genre_list in df["genres"].dropna():
-        for genre in genre_list.split(","):
-            all_genres.add(genre.strip())
-
-    return jsonify(sorted(list(all_genres)))
-
-
 @main.route("/search_by_genres", methods=["POST"])
 def search_by_genres():
     data = request.get_json()
@@ -72,37 +56,34 @@ def search_by_genres():
         return jsonify([])
 
     conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    # Build SQL WHERE clause dynamically
-    conditions = []
-    values = []
-
-    for genre in selected_genres:
-        conditions.append("LOWER(genres) LIKE ?")
-        values.append(f"%{genre.lower()}%")
-
-    query = f"""
-        SELECT title, genres, image_url, score
-        FROM anime
-        WHERE {" OR ".join(conditions)}
-        LIMIT 20
-    """
-
-    cursor.execute(query, values)
-    rows = cursor.fetchall()
-
+    df = pd.read_sql_query(
+        "SELECT title, genres, image_url, score FROM anime",
+        conn
+    )
     conn.close()
 
-    # Convert to list of dicts
-    results = [
-        {
-            "title": row[0],
-            "genres": row[1],
-            "image_url": row[2],
-            "score": row[3]
-        }
-        for row in rows
-    ]
+    def match_count(genre_string):
+        if not genre_string:
+            return 0
+        genre_string = genre_string.lower()
+        return sum(
+            1 for g in selected_genres
+            if g.lower() in genre_string
+        )
+
+    df["match_score"] = df["genres"].apply(match_count)
+
+    # Only keep anime that match at least 1 selected genre
+    filtered = df[df["match_score"] > 0]
+
+    # Sort by:
+    # 1️⃣ number of matched genres (descending)
+    # 2️⃣ rating score (descending)
+    filtered = filtered.sort_values(
+        by=["match_score", "score"],
+        ascending=[False, False]
+    )
+
+    results = filtered.head(20).to_dict(orient="records")
 
     return jsonify(results)
