@@ -10,6 +10,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, "anime.db")
 
 
+# ================= HOME ROUTE =================
 @main.route("/", methods=["GET", "POST"])
 def home():
     anime = None
@@ -34,7 +35,7 @@ def home():
     )
 
 
-# ✅ AUTOCOMPLETE ROUTE
+# ================= AUTOCOMPLETE ROUTE =================
 @main.route("/get_anime_titles")
 def get_anime_titles():
     conn = sqlite3.connect(DB_PATH)
@@ -43,10 +44,28 @@ def get_anime_titles():
 
     titles = df["title"].dropna().tolist()
 
-    # IMPORTANT: must return { titles: [...] }
     return jsonify({"titles": titles})
 
 
+# ================= GET GENRES ROUTE =================
+@main.route("/get_genres", methods=["GET"])
+def get_genres():
+    conn = sqlite3.connect(DB_PATH)
+    df = pd.read_sql_query("SELECT genres FROM anime", conn)
+    conn.close()
+
+    all_genres = set()
+
+    for genre_string in df["genres"].dropna():
+        for genre in genre_string.split(","):
+            cleaned = genre.strip()
+            if cleaned:
+                all_genres.add(cleaned)
+
+    return jsonify(sorted(list(all_genres)))
+
+
+# ================= SEARCH BY GENRES =================
 @main.route("/search_by_genres", methods=["POST"])
 def search_by_genres():
     data = request.get_json()
@@ -62,18 +81,27 @@ def search_by_genres():
     )
     conn.close()
 
+    # Convert selected genres to lowercase once
+    selected_genres = [g.lower() for g in selected_genres]
+
     def match_count(genre_string):
         if not genre_string:
             return 0
-        genre_string = genre_string.lower()
+
+        genre_list = [
+            g.strip().lower()
+            for g in genre_string.split(",")
+        ]
+
+        # Exact matching only
         return sum(
             1 for g in selected_genres
-            if g.lower() in genre_string
+            if g in genre_list
         )
 
     df["match_score"] = df["genres"].apply(match_count)
 
-    # Only keep anime that match at least 1 selected genre
+    # Keep only anime with at least 1 matching genre
     filtered = df[df["match_score"] > 0]
 
     # Sort by:
