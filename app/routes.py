@@ -63,7 +63,6 @@ def get_genres():
     return jsonify(sorted(list(all_genres)))
 
 
-# ✅ SEARCH BY GENRES (MISSING BEFORE)
 @main.route("/search_by_genres", methods=["POST"])
 def search_by_genres():
     data = request.get_json()
@@ -73,17 +72,37 @@ def search_by_genres():
         return jsonify([])
 
     conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql_query("SELECT * FROM anime", conn)
+    cursor = conn.cursor()
+
+    # Build SQL WHERE clause dynamically
+    conditions = []
+    values = []
+
+    for genre in selected_genres:
+        conditions.append("LOWER(genres) LIKE ?")
+        values.append(f"%{genre.lower()}%")
+
+    query = f"""
+        SELECT title, genres, image_url, score
+        FROM anime
+        WHERE {" OR ".join(conditions)}
+        LIMIT 20
+    """
+
+    cursor.execute(query, values)
+    rows = cursor.fetchall()
+
     conn.close()
 
-    def has_genre(genre_string):
-        if not genre_string:
-            return False
-        genre_string = genre_string.lower()
-        return any(g.lower() in genre_string for g in selected_genres)
-
-    filtered = df[df["genres"].apply(has_genre)]
-
-    results = filtered.head(20).to_dict(orient="records")
+    # Convert to list of dicts
+    results = [
+        {
+            "title": row[0],
+            "genres": row[1],
+            "image_url": row[2],
+            "score": row[3]
+        }
+        for row in rows
+    ]
 
     return jsonify(results)
