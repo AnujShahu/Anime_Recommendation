@@ -1,25 +1,23 @@
 import os
-import psycopg2
-import sqlalchemy
 import pandas as pd
-import os
+import sqlite3
 
-# Get current directory (project root)
+# Get project root directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Build full path to CSV
+# CSV path
 csv_path = os.path.join(BASE_DIR, "data", "anime_with_selected_genres.csv")
 
 # Load CSV
 df = pd.read_csv(csv_path)
 
-# Create SQLite database
+# SQLite database path
 db_path = os.path.join(BASE_DIR, "anime.db")
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
+# Create connection
+conn = sqlite3.connect(db_path)
 
-engine = sqlalchemy.create_engine(DATABASE_URL)
-
+# Save to database
 df.to_sql("anime", conn, if_exists="replace", index=False)
 
 conn.close()
