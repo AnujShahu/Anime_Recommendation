@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentPage = 1;
 
     /* ================= DARK MODE ================= */
-
     if (themeToggle) {
 
         if (localStorage.getItem("theme") === "light") {
@@ -46,7 +45,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /* ================= TAB SWITCH ================= */
-
     if (searchTab && genreTab) {
 
         searchTab.addEventListener("click", function () {
@@ -65,7 +63,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /* ================= LOAD TITLES ================= */
-
     fetch("/get_anime_titles")
         .then(res => res.json())
         .then(data => {
@@ -74,7 +71,6 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(err => console.error("Autocomplete error:", err));
 
     /* ================= AUTOCOMPLETE ================= */
-
     if (searchInput) {
 
         searchInput.addEventListener("input", function () {
@@ -82,6 +78,34 @@ document.addEventListener("DOMContentLoaded", function () {
             debounceTimer = setTimeout(() => {
                 showSuggestions(this.value.trim());
             }, 150);
+        });
+
+        searchInput.addEventListener("keydown", function (e) {
+
+            const items = suggestionsBox.getElementsByClassName("suggestion-item");
+
+            if (e.key === "ArrowDown") {
+                currentFocus++;
+                addActive(items);
+                e.preventDefault();
+            }
+
+            else if (e.key === "ArrowUp") {
+                currentFocus--;
+                addActive(items);
+                e.preventDefault();
+            }
+
+            else if (e.key === "Enter") {
+                if (currentFocus > -1 && items[currentFocus]) {
+                    e.preventDefault();
+                    items[currentFocus].click();
+                }
+            }
+
+            else if (e.key === "Escape") {
+                suggestionsBox.innerHTML = "";
+            }
         });
     }
 
@@ -111,11 +135,11 @@ document.addEventListener("DOMContentLoaded", function () {
             div.classList.add("suggestion-item");
             div.innerHTML = highlightMatch(item.title, query);
 
-            div.onclick = function () {
+            div.addEventListener("click", function () {
                 searchInput.value = item.title;
                 suggestionsBox.innerHTML = "";
                 searchForm.submit();
-            };
+            });
 
             suggestionsBox.appendChild(div);
         });
@@ -137,8 +161,29 @@ document.addEventListener("DOMContentLoaded", function () {
         return title.replace(regex, "<strong>$1</strong>");
     }
 
-    /* ================= LOAD GENRES ================= */
+    function addActive(items) {
+        if (!items) return false;
 
+        removeActive(items);
+
+        if (currentFocus >= items.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = items.length - 1;
+
+        items[currentFocus].classList.add("active-suggestion");
+
+        items[currentFocus].scrollIntoView({
+            block: "nearest",
+            behavior: "smooth"
+        });
+    }
+
+    function removeActive(items) {
+        for (let i = 0; i < items.length; i++) {
+            items[i].classList.remove("active-suggestion");
+        }
+    }
+
+    /* ================= LOAD GENRES ================= */
     fetch("/get_genres")
         .then(res => res.json())
         .then(genres => {
@@ -168,7 +213,6 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(err => console.error("Genre load error:", err));
 
     /* ================= SEARCH BY GENRE ================= */
-
     if (genreSearchBtn) {
 
         genreSearchBtn.addEventListener("click", function () {
