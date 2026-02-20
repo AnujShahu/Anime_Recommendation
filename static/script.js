@@ -82,32 +82,47 @@ document.addEventListener("DOMContentLoaded", function () {
 
         searchInput.addEventListener("keydown", function (e) {
 
-            const items = suggestionsBox.getElementsByClassName("suggestion-item");
+    const items = suggestionsBox.getElementsByClassName("suggestion-item");
 
-            if (e.key === "ArrowDown") {
-                currentFocus++;
-                addActive(items);
-                e.preventDefault();
-            }
+    if (!items.length) return;
 
-            else if (e.key === "ArrowUp") {
-                currentFocus--;
-                addActive(items);
-                e.preventDefault();
-            }
-
-            else if (e.key === "Enter") {
-                if (currentFocus > -1 && items[currentFocus]) {
-                    e.preventDefault();
-                    items[currentFocus].click();
-                }
-            }
-
-            else if (e.key === "Escape") {
-                suggestionsBox.innerHTML = "";
-            }
-        });
+    if (e.key === "ArrowDown") {
+        e.preventDefault();
+        currentFocus++;
+        addActive(items);
     }
+
+    else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        currentFocus--;
+        addActive(items);
+    }
+
+    else if (e.key === "Enter") {
+        if (currentFocus > -1 && items[currentFocus]) {
+            e.preventDefault();
+            items[currentFocus].click();
+        }
+    }
+
+    // ✅ NEW: PageDown scrolls suggestion box
+    else if (e.key === "PageDown") {
+        e.preventDefault();
+        suggestionsBox.scrollTop += suggestionsBox.clientHeight;
+    }
+
+    // ✅ NEW: PageUp scrolls suggestion box
+    else if (e.key === "PageUp") {
+        e.preventDefault();
+        suggestionsBox.scrollTop -= suggestionsBox.clientHeight;
+    }
+
+    // Optional: Escape closes suggestions
+    else if (e.key === "Escape") {
+        suggestionsBox.innerHTML = "";
+        currentFocus = -1;
+    }
+});
 
     function showSuggestions(query) {
 
