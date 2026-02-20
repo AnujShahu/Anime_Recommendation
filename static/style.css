@@ -169,10 +169,9 @@ body {
 
 .anime-img {
     width: 100%;
-    height: 300px;
+    height: 400px;
     object-fit: cover;
     border-radius: 15px;
-    margin-bottom: 12px;
 }
 
 /* ================= AUTOCOMPLETE ================= */
@@ -188,6 +187,8 @@ body {
     text-align: left;
     z-index: 1000;
     animation: fadeUp 0.3s ease;
+    max-height: 220px;
+overflow-y: auto;
 }
 
 .suggestion-item {
@@ -241,4 +242,8 @@ body.light-mode {
 
 body.light-mode .anime-card {
     background: rgba(0,0,0,0.05);
+}
+.active-suggestion {
+    background: linear-gradient(45deg,#ff4757,#ff6b81);
+    color: white;
 }
