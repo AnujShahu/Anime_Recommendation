@@ -5,3 +5,4 @@ scikit-learn
 gunicorn
 psycopg2-binary
 sqlalchemy
+flask-caching

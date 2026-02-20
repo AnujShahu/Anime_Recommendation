@@ -186,67 +186,121 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     /* ================= LOAD GENRES ================= */
+let currentPage = 1;
 
-    fetch("/get_genres")
-        .then(res => res.json())
-        .then(genres => {
+genreSearchBtn.addEventListener("click", function () {
 
-            genres.forEach(genre => {
+    currentPage = 1;
+    loadGenreResults();
+});
 
-                const div = document.createElement("div");
-                div.classList.add("genre-item");
-                div.textContent = genre;
+function loadGenreResults() {
 
-                div.onclick = function () {
+    genreResults.innerHTML = `<div class="loader"></div>`;
 
-                    div.classList.toggle("selected");
+    fetch("/search_by_genres", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            genres: selectedGenres,
+            page: currentPage
+        })
+    })
+    .then(res => res.json())
+    .then(results => {
 
-                    if (selectedGenres.includes(genre)) {
-                        selectedGenres =
-                            selectedGenres.filter(g => g !== genre);
-                    } else {
-                        selectedGenres.push(genre);
-                    }
-                };
+        genreResults.innerHTML = "";
 
-                genreContainer.appendChild(div);
-            });
+        if (results.length === 0) {
+            genreResults.innerHTML = "<p>No anime found.</p>";
+            return;
+        }
+
+        results.forEach(anime => {
+            genreResults.innerHTML += `
+                <div class="anime-card">
+                    <img src="${anime.image_url}" 
+                         class="anime-img"
+                         onerror="this.src='/static/placeholder.jpg'">
+                    <h3>${anime.title}</h3>
+                    <p>${anime.genres}</p>
+                    <p>⭐ ${anime.score}</p>
+                </div>
+            `;
         });
+
+        // 🔥 Load More Button
+        genreResults.innerHTML += `
+            <button id="loadMoreBtn" class="search-btn">
+                Load More
+            </button>
+        `;
+
+        document.getElementById("loadMoreBtn")
+            .addEventListener("click", function () {
+                currentPage++;
+                loadGenreResults();
+            });
+    });
+}
 
     /* ================= SEARCH BY GENRE ================= */
+let currentPage = 1;
 
-    genreSearchBtn.addEventListener("click", function () {
-
-        fetch("/search_by_genres", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ genres: selectedGenres })
-        })
-        .then(res => res.json())
-        .then(results => {
-
-            genreResults.innerHTML = "";
-
-            if (results.length === 0) {
-                genreResults.innerHTML = "<p>No anime found.</p>";
-                return;
-            }
-
-            results.forEach(anime => {
-                genreResults.innerHTML += `
-                    <div class="anime-card">
-                        <img src="${anime.image_url}" class="anime-img">
-                        <h3>${anime.title}</h3>
-                        <p>${anime.genres}</p>
-                        <p>⭐ ${anime.score}</p>
-                    </div>
-                `;
-            });
-
-            genreResults.scrollIntoView({
-                behavior: "smooth"
-            });
-        });
-    });
-
+genreSearchBtn.addEventListener("click", function () {
+    currentPage = 1;
+    loadGenreResults();
 });
+
+function loadGenreResults() {
+
+    genreResults.innerHTML = `<div class="loader"></div>`;
+
+    fetch("/search_by_genres", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            genres: selectedGenres,
+            page: currentPage
+        })
+    })
+    .then(res => res.json())
+    .then(results => {
+
+        if (currentPage === 1) {
+            genreResults.innerHTML = "";
+        }
+
+        if (results.length === 0 && currentPage === 1) {
+            genreResults.innerHTML = "<p>No anime found.</p>";
+            return;
+        }
+
+        results.forEach(anime => {
+            genreResults.innerHTML += `
+                <div class="anime-card">
+                    <img src="${anime.image_url}" 
+                         class="anime-img"
+                         onerror="this.src='/static/placeholder.jpg'">
+                    <h3>${anime.title}</h3>
+                    <p>${anime.genres}</p>
+                    <p>⭐ ${anime.score}</p>
+                </div>
+            `;
+        });
+
+        if (results.length === 20) {
+            genreResults.innerHTML += `
+                <button id="loadMoreBtn" class="search-btn">
+                    Load More
+                </button>
+            `;
+
+            document.getElementById("loadMoreBtn")
+                .addEventListener("click", function () {
+                    currentPage++;
+                    loadGenreResults();
+                });
+        }
+    });
+}

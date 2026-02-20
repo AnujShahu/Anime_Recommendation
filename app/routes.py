@@ -1,13 +1,11 @@
 from flask import Blueprint, render_template, request, jsonify
 from .recommender import get_recommendations
-import sqlite3
+from .database import get_connection
+from . import cache
 import pandas as pd
-import os
+import logging
 
 main = Blueprint("main", __name__)
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_PATH = os.path.join(BASE_DIR, "anime.db")
 
 
 # ================= HOME ROUTE =================
@@ -19,6 +17,8 @@ def home():
 
     if request.method == "POST":
         anime_name = request.form.get("anime_name")
+        logging.info(f"Search requested: {anime_name}")
+
         anime_data, recs = get_recommendations(anime_name)
 
         if anime_data is None:
@@ -35,22 +35,23 @@ def home():
     )
 
 
-# ================= AUTOCOMPLETE ROUTE =================
+# ================= AUTOCOMPLETE =================
 @main.route("/get_anime_titles")
+@cache.cached(timeout=600)
 def get_anime_titles():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     df = pd.read_sql_query("SELECT title FROM anime", conn)
     conn.close()
 
     titles = df["title"].dropna().tolist()
-
     return jsonify({"titles": titles})
 
 
-# ================= GET GENRES ROUTE =================
+# ================= GET GENRES =================
 @main.route("/get_genres", methods=["GET"])
+@cache.cached(timeout=600)
 def get_genres():
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     df = pd.read_sql_query("SELECT genres FROM anime", conn)
     conn.close()
 
@@ -70,48 +71,44 @@ def get_genres():
 def search_by_genres():
     data = request.get_json()
     selected_genres = data.get("genres", [])
+    page = data.get("page", 1)
+    per_page = 20
 
     if not selected_genres:
         return jsonify([])
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = get_connection()
     df = pd.read_sql_query(
         "SELECT title, genres, image_url, score FROM anime",
         conn
     )
     conn.close()
 
-    # Convert selected genres to lowercase once
     selected_genres = [g.lower() for g in selected_genres]
 
     def match_count(genre_string):
         if not genre_string:
             return 0
 
-        genre_list = [
-            g.strip().lower()
-            for g in genre_string.split(",")
-        ]
+        genre_list = [g.strip().lower() for g in genre_string.split(",")]
 
-        # Exact matching only
-        return sum(
-            1 for g in selected_genres
-            if g in genre_list
-        )
+        return sum(1 for g in selected_genres if g in genre_list)
 
     df["match_score"] = df["genres"].apply(match_count)
 
-    # Keep only anime with at least 1 matching genre
     filtered = df[df["match_score"] > 0]
 
-    # Sort by:
-    # 1️⃣ number of matched genres (descending)
-    # 2️⃣ rating score (descending)
     filtered = filtered.sort_values(
         by=["match_score", "score"],
         ascending=[False, False]
     )
 
-    results = filtered.head(20).to_dict(orient="records")
+    # 🔥 PAGINATION
+    start = (page - 1) * per_page
+    end = start + per_page
+
+    results = filtered.iloc[start:end].to_dict(orient="records")
+
+    logging.info(f"Genre search: {selected_genres}")
 
     return jsonify(results)
