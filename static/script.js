@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    /* ================= ELEMENTS ================= */
+    /* ================= SAFE ELEMENT LOADING ================= */
     const searchTab = document.getElementById("searchTab");
     const genreTab = document.getElementById("genreTab");
     const searchSection = document.getElementById("searchSection");
@@ -20,42 +20,49 @@ document.addEventListener("DOMContentLoaded", function () {
     let selectedGenres = [];
     let currentFocus = -1;
     let debounceTimer;
+    let currentPage = 1;
 
-    /* ================= DARK MODE TOGGLE ================= */
+    /* ================= DARK MODE ================= */
 
-    // Load saved theme
-    if (localStorage.getItem("theme") === "light") {
-        document.body.classList.add("light-mode");
-        themeToggle.textContent = "☀ Light Mode";
-    }
+    if (themeToggle) {
 
-    themeToggle.addEventListener("click", function () {
-        document.body.classList.toggle("light-mode");
-
-        if (document.body.classList.contains("light-mode")) {
-            localStorage.setItem("theme", "light");
+        if (localStorage.getItem("theme") === "light") {
+            document.body.classList.add("light-mode");
             themeToggle.textContent = "☀ Light Mode";
-        } else {
-            localStorage.setItem("theme", "dark");
-            themeToggle.textContent = "🌙 Dark Mode";
         }
-    });
+
+        themeToggle.addEventListener("click", function () {
+
+            document.body.classList.toggle("light-mode");
+
+            if (document.body.classList.contains("light-mode")) {
+                localStorage.setItem("theme", "light");
+                themeToggle.textContent = "☀ Light Mode";
+            } else {
+                localStorage.setItem("theme", "dark");
+                themeToggle.textContent = "🌙 Dark Mode";
+            }
+        });
+    }
 
     /* ================= TAB SWITCH ================= */
 
-    searchTab.addEventListener("click", function () {
-        searchTab.classList.add("active");
-        genreTab.classList.remove("active");
-        searchSection.classList.remove("hidden");
-        genreSection.classList.add("hidden");
-    });
+    if (searchTab && genreTab) {
 
-    genreTab.addEventListener("click", function () {
-        genreTab.classList.add("active");
-        searchTab.classList.remove("active");
-        genreSection.classList.remove("hidden");
-        searchSection.classList.add("hidden");
-    });
+        searchTab.addEventListener("click", function () {
+            searchTab.classList.add("active");
+            genreTab.classList.remove("active");
+            searchSection.classList.remove("hidden");
+            genreSection.classList.add("hidden");
+        });
+
+        genreTab.addEventListener("click", function () {
+            genreTab.classList.add("active");
+            searchTab.classList.remove("active");
+            genreSection.classList.remove("hidden");
+            searchSection.classList.add("hidden");
+        });
+    }
 
     /* ================= LOAD TITLES ================= */
 
@@ -63,18 +70,24 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(res => res.json())
         .then(data => {
             animeTitles = data.titles || [];
+        })
+        .catch(err => console.error("Autocomplete error:", err));
+
+    /* ================= AUTOCOMPLETE ================= */
+
+    if (searchInput) {
+
+        searchInput.addEventListener("input", function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                showSuggestions(this.value.trim());
+            }, 150);
         });
-
-    /* ================= GOOGLE-LIKE AUTOCOMPLETE ================= */
-
-    searchInput.addEventListener("input", function () {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-            showSuggestions(this.value.trim());
-        }, 120);
-    });
+    }
 
     function showSuggestions(query) {
+
+        if (!suggestionsBox) return;
 
         suggestionsBox.innerHTML = "";
         currentFocus = -1;
@@ -109,7 +122,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function calculateScore(title, input) {
-
         if (title.startsWith(input)) return 100;
         if (title.includes(input)) return 60;
 
@@ -117,7 +129,6 @@ document.addEventListener("DOMContentLoaded", function () {
         for (let char of input) {
             if (title.includes(char)) matches++;
         }
-
         return matches;
     }
 
@@ -126,181 +137,105 @@ document.addEventListener("DOMContentLoaded", function () {
         return title.replace(regex, "<strong>$1</strong>");
     }
 
-    /* ================= KEYBOARD CONTROL ================= */
-
-    searchInput.addEventListener("keydown", function (e) {
-
-        let items = suggestionsBox.getElementsByClassName("suggestion-item");
-
-        if (e.key === "ArrowDown" && items.length > 0) {
-            e.preventDefault();
-            currentFocus++;
-            addActive(items);
-        }
-
-        else if (e.key === "ArrowUp" && items.length > 0) {
-            e.preventDefault();
-            currentFocus--;
-            addActive(items);
-        }
-
-        else if (e.key === "Enter") {
-
-            if (currentFocus > -1 && items.length > 0) {
-                e.preventDefault();
-                items[currentFocus].click();
-            }
-            // else allow normal form submit
-        }
-
-        else if (e.key === "Escape") {
-            suggestionsBox.innerHTML = "";
-        }
-    });
-
-    function addActive(items) {
-
-        removeActive(items);
-
-        if (currentFocus >= items.length) currentFocus = 0;
-        if (currentFocus < 0) currentFocus = items.length - 1;
-
-        items[currentFocus].classList.add("active-suggestion");
-
-        items[currentFocus].scrollIntoView({
-            block: "nearest",
-            behavior: "smooth"
-        });
-    }
-
-    function removeActive(items) {
-        for (let i = 0; i < items.length; i++) {
-            items[i].classList.remove("active-suggestion");
-        }
-    }
-
-    document.addEventListener("click", function (e) {
-        if (!e.target.closest(".search-wrapper")) {
-            suggestionsBox.innerHTML = "";
-        }
-    });
-
     /* ================= LOAD GENRES ================= */
-let currentPage = 1;
 
-genreSearchBtn.addEventListener("click", function () {
+    fetch("/get_genres")
+        .then(res => res.json())
+        .then(genres => {
 
-    currentPage = 1;
-    loadGenreResults();
-});
+            if (!genreContainer) return;
 
-function loadGenreResults() {
+            genres.forEach(genre => {
 
-    genreResults.innerHTML = `<div class="loader"></div>`;
+                const btn = document.createElement("button");
+                btn.classList.add("genre-btn");
+                btn.textContent = genre;
 
-    fetch("/search_by_genres", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            genres: selectedGenres,
-            page: currentPage
-        })
-    })
-    .then(res => res.json())
-    .then(results => {
+                btn.addEventListener("click", function () {
 
-        genreResults.innerHTML = "";
+                    btn.classList.toggle("selected");
 
-        if (results.length === 0) {
-            genreResults.innerHTML = "<p>No anime found.</p>";
-            return;
-        }
+                    if (selectedGenres.includes(genre)) {
+                        selectedGenres = selectedGenres.filter(g => g !== genre);
+                    } else {
+                        selectedGenres.push(genre);
+                    }
+                });
 
-        results.forEach(anime => {
-            genreResults.innerHTML += `
-                <div class="anime-card">
-                    <img src="${anime.image_url}" 
-                         class="anime-img"
-                         onerror="this.src='/static/placeholder.jpg'">
-                    <h3>${anime.title}</h3>
-                    <p>${anime.genres}</p>
-                    <p>⭐ ${anime.score}</p>
-                </div>
-            `;
-        });
-
-        // 🔥 Load More Button
-        genreResults.innerHTML += `
-            <button id="loadMoreBtn" class="search-btn">
-                Load More
-            </button>
-        `;
-
-        document.getElementById("loadMoreBtn")
-            .addEventListener("click", function () {
-                currentPage++;
-                loadGenreResults();
+                genreContainer.appendChild(btn);
             });
-    });
-}
+        })
+        .catch(err => console.error("Genre load error:", err));
 
     /* ================= SEARCH BY GENRE ================= */
-let currentPage = 1;
 
-genreSearchBtn.addEventListener("click", function () {
-    currentPage = 1;
-    loadGenreResults();
-});
+    if (genreSearchBtn) {
 
-function loadGenreResults() {
-
-    genreResults.innerHTML = `<div class="loader"></div>`;
-
-    fetch("/search_by_genres", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            genres: selectedGenres,
-            page: currentPage
-        })
-    })
-    .then(res => res.json())
-    .then(results => {
-
-        if (currentPage === 1) {
-            genreResults.innerHTML = "";
-        }
-
-        if (results.length === 0 && currentPage === 1) {
-            genreResults.innerHTML = "<p>No anime found.</p>";
-            return;
-        }
-
-        results.forEach(anime => {
-            genreResults.innerHTML += `
-                <div class="anime-card">
-                    <img src="${anime.image_url}" 
-                         class="anime-img"
-                         onerror="this.src='/static/placeholder.jpg'">
-                    <h3>${anime.title}</h3>
-                    <p>${anime.genres}</p>
-                    <p>⭐ ${anime.score}</p>
-                </div>
-            `;
+        genreSearchBtn.addEventListener("click", function () {
+            currentPage = 1;
+            loadGenreResults();
         });
+    }
 
-        if (results.length === 20) {
-            genreResults.innerHTML += `
-                <button id="loadMoreBtn" class="search-btn">
-                    Load More
-                </button>
-            `;
+    function loadGenreResults() {
 
-            document.getElementById("loadMoreBtn")
-                .addEventListener("click", function () {
-                    currentPage++;
-                    loadGenreResults();
-                });
-        }
-    });
-}
+        if (!genreResults) return;
+
+        genreResults.innerHTML = `<div class="loader"></div>`;
+
+        fetch("/search_by_genres", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                genres: selectedGenres,
+                page: currentPage
+            })
+        })
+        .then(res => res.json())
+        .then(results => {
+
+            if (currentPage === 1) {
+                genreResults.innerHTML = "";
+            }
+
+            if (results.length === 0 && currentPage === 1) {
+                genreResults.innerHTML = "<p>No anime found.</p>";
+                return;
+            }
+
+            results.forEach(anime => {
+
+                genreResults.innerHTML += `
+                    <div class="anime-card">
+                        <img src="${anime.image_url}"
+                             class="anime-img"
+                             onerror="this.src='/static/placeholder.jpg'">
+                        <h3>${anime.title}</h3>
+                        <p>${anime.genres}</p>
+                        <p>⭐ ${anime.score}</p>
+                    </div>
+                `;
+            });
+
+            if (results.length === 20) {
+
+                const existingBtn = document.getElementById("loadMoreBtn");
+                if (existingBtn) existingBtn.remove();
+
+                genreResults.innerHTML += `
+                    <button id="loadMoreBtn" class="search-btn">
+                        Load More
+                    </button>
+                `;
+
+                document.getElementById("loadMoreBtn")
+                    .addEventListener("click", function () {
+                        currentPage++;
+                        loadGenreResults();
+                    });
+            }
+        })
+        .catch(err => console.error("Genre search error:", err));
+    }
+
+});
