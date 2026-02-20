@@ -1,13 +1,16 @@
+/* ================= GLOBAL ================= */
+
 body {
     margin: 0;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     color: white;
-    transition: background 0.4s ease, color 0.4s ease;
+    transition: all 0.4s ease;
+    overflow-x: hidden;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1300px;
     margin: auto;
     padding: 60px 20px;
     text-align: center;
@@ -16,51 +19,63 @@ body {
 
 .title {
     font-size: 3rem;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+    animation: fadeDown 1s ease;
 }
 
-/* ===== THEME TOGGLE ===== */
+/* ================= THEME BUTTON ================= */
+
 .theme-toggle {
     position: absolute;
     top: 30px;
     right: 40px;
-    padding: 8px 18px;
-    border-radius: 20px;
+    padding: 10px 22px;
+    border-radius: 30px;
     border: none;
     cursor: pointer;
     font-weight: bold;
-    background: #ffffff;
-    color: #111;
-    transition: 0.3s ease;
-}
-
-.theme-toggle:hover {
-    transform: scale(1.05);
-}
-
-/* ===== TABS ===== */
-.tabs {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 30px;
-}
-
-.tab {
-    padding: 12px 25px;
-    margin: 0 10px;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-    background: rgba(255,255,255,0.1);
+    background: linear-gradient(45deg,#ff4757,#ff6b81);
     color: white;
     transition: 0.3s;
 }
 
-.tab.active {
-    background: #ff4757;
+.theme-toggle:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 20px rgba(255,71,87,0.6);
 }
 
-/* ===== SEARCH ===== */
+/* ================= TABS ================= */
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 35px;
+}
+
+.tab {
+    padding: 12px 30px;
+    margin: 0 12px;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    font-weight: 600;
+    background: rgba(255,255,255,0.08);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.tab:hover {
+    transform: translateY(-3px);
+}
+
+.tab.active {
+    background: linear-gradient(45deg,#ff4757,#ff6b81);
+    box-shadow: 0 0 15px rgba(255,71,87,0.6);
+}
+
+/* ================= SEARCH ================= */
+
 .search-wrapper {
     position: relative;
     width: 60%;
@@ -69,72 +84,99 @@ body {
 
 #searchInput {
     width: 100%;
-    padding: 14px;
-    border-radius: 30px;
+    padding: 15px;
+    border-radius: 40px;
     border: none;
     outline: none;
     font-size: 16px;
+    transition: 0.3s;
 }
 
 #searchInput:focus {
     box-shadow: 0 0 15px #ff4757;
+    transform: scale(1.02);
 }
 
 .search-btn {
-    padding: 14px 35px;
-    border-radius: 30px;
+    padding: 14px 40px;
+    border-radius: 40px;
     border: none;
-    background: linear-gradient(45deg, #ff4757, #ff6b81);
+    background: linear-gradient(45deg,#ff4757,#ff6b81);
     color: white;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: 0.3s;
 }
 
 .search-btn:hover {
-    transform: scale(1.05);
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255,71,87,0.6);
 }
 
-/* ===== CARDS ===== */
-.anime-card {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(8px);
-    padding: 20px;
-    margin: 15px;
-    border-radius: 20px;
-    transition: 0.3s ease;
+/* ================= GENRE BUTTONS ================= */
+
+.genre-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
 }
 
-.anime-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 0 20px rgba(255,71,87,0.5);
+.genre-btn {
+    padding: 12px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    transition: all 0.3s ease;
 }
 
-.main-anime {
-    background: rgba(255, 71, 87, 0.35);
+.genre-btn:hover {
+    background: linear-gradient(45deg,#6a11cb,#2575fc);
+    transform: translateY(-4px);
+    box-shadow: 0 0 15px rgba(37,117,252,0.6);
 }
+
+.genre-btn.selected {
+    background: linear-gradient(45deg,#ff4757,#ff6b81);
+    box-shadow: 0 0 15px rgba(255,71,87,0.6);
+}
+
+/* ================= CARDS ================= */
 
 .recommend-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
+    gap: 25px;
+    margin-top: 30px;
 }
 
-.recommend-title {
-    margin-top: 40px;
-    font-size: 1.8rem;
+.anime-card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    padding: 20px;
+    border-radius: 20px;
+    transition: all 0.4s ease;
+    animation: fadeUp 0.8s ease;
+}
+
+.anime-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 0 30px rgba(255,71,87,0.5);
 }
 
 .anime-img {
     width: 100%;
     height: 300px;
     object-fit: cover;
-    object-position: center;
     border-radius: 15px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
-/* ===== AUTOCOMPLETE ===== */
+/* ================= AUTOCOMPLETE ================= */
+
 .suggestions-box {
     position: absolute;
     width: 100%;
@@ -145,44 +187,21 @@ body {
     margin-top: 8px;
     text-align: left;
     z-index: 1000;
+    animation: fadeUp 0.3s ease;
 }
 
 .suggestion-item {
     padding: 12px;
     cursor: pointer;
+    transition: 0.2s;
 }
 
-.suggestion-item:hover,
-.active-suggestion {
-    background: #ff4757;
-    color: white;
-}
-
-.suggestion-item strong {
-    color: #ff6b81;
-}
-
-/* ===== GENRE GRID ===== */
-.genre-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.genre-item {
-    background: rgba(255,255,255,0.1);
-    padding: 8px;
-    border-radius: 20px;
-    cursor: pointer;
-    text-align: center;
-}
-
-.genre-item.selected {
+.suggestion-item:hover {
     background: #ff4757;
 }
 
-/* ===== LOADER ===== */
+/* ================= LOADER ================= */
+
 .loader {
     border: 6px solid rgba(255,255,255,0.2);
     border-top: 6px solid #ff4757;
@@ -197,55 +216,29 @@ body {
     display: none;
 }
 
+/* ================= ANIMATIONS ================= */
+
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes spin {
     100% { transform: rotate(360deg); }
 }
 
-.error {
-    color: #ff6b81;
-}
-
 /* ================= LIGHT MODE ================= */
+
 body.light-mode {
     background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
     color: #111;
 }
 
 body.light-mode .anime-card {
-    background: rgba(0, 0, 0, 0.05);
-    color: #111;
-}
-
-body.light-mode .main-anime {
-    background: rgba(255, 71, 87, 0.15);
-}
-
-body.light-mode .tab {
-    background: rgba(0,0,0,0.08);
-    color: #111;
-}
-
-body.light-mode .tab.active {
-    background: #ff4757;
-    color: white;
-}
-
-body.light-mode #searchInput {
-    background: #ffffff;
-    color: #111;
-}
-
-body.light-mode .suggestions-box {
-    background: #ffffff;
-    color: #111;
-}
-
-body.light-mode .genre-item {
-    background: rgba(0,0,0,0.08);
-    color: #111;
-}
-
-body.light-mode .genre-item.selected {
-    background: #ff4757;
-    color: white;
+    background: rgba(0,0,0,0.05);
 }
