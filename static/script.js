@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
-
+	/* ================= GOOGLE REDIRECT ================= */
+	function redirectToGoogle(title) {
+  		  const query = encodeURIComponent(title + " anime");
+  		  window.open(`https://www.google.com/search?q=${query}`, "_blank");
+					}
+    
     /* ================= ELEMENTS ================= */
     const searchTab = document.getElementById("searchTab");
     const genreTab = document.getElementById("genreTab");
@@ -225,16 +230,17 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             results.forEach(anime => {
-                genreResults.innerHTML += `
-                    <div class="anime-card">
-                        <img src="${anime.image_url}"
-                             class="anime-img"
-                             onerror="this.src='/static/placeholder.jpg'">
-                        <h3>${anime.title}</h3>
-                        <p>${anime.genres}</p>
-                        <p>⭐ ${anime.score}</p>
-                    </div>
-                `;
+               genreResults.innerHTML += `
+    <div class="anime-card clickable-card"
+         data-title="${anime.title}">
+        <img src="${anime.image_url}"
+             class="anime-img"
+             onerror="this.src='/static/placeholder.jpg'">
+        <h3>${anime.title}</h3>
+        <p>${anime.genres}</p>
+        <p>⭐ ${anime.score}</p>
+    </div>
+`;
             });
 
             if (results.length === 20) {
@@ -256,5 +262,14 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
+   /* ================= CLICK HANDLER FOR SEARCH + RECOMMEND ================= */
+document.addEventListener("click", function (e) {
+    const card = e.target.closest(".clickable-card");
+
+    if (card && card.dataset.title) {
+        redirectToGoogle(card.dataset.title);
+    }
+});
 
 });

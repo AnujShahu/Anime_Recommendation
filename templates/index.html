@@ -45,7 +45,8 @@
         {% endif %}
 
         {% if anime %}
-            <div class="anime-card main-anime">
+            <div class="anime-card main-anime clickable-card"
+     data-title="{{ anime.title }}">
                 <img src="{{ anime.image_url }}" class="anime-img">
                 <h2>{{ anime.title }}</h2>
                 <p><strong>Genres:</strong> {{ anime.genres }}</p>
@@ -58,7 +59,8 @@
             <h2 class="recommend-title">Recommended Anime</h2>
             <div class="recommend-grid">
                 {% for rec in recommendations %}
-                    <div class="anime-card">
+                    <div class="anime-card clickable-card"
+     data-title="{{ rec.title }}">
                         <img src="{{ rec.image_url }}" class="anime-img">
                         <h3>{{ rec.title }}</h3>
                         <p>{{ rec.genres }}</p>
