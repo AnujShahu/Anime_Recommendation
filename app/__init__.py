@@ -19,28 +19,34 @@ def create_app():
         static_folder=static_dir
     )
 
-    # 🔐 SECRET KEY (NEW)
+    # ================= SECRET KEY =================
     app.config["SECRET_KEY"] = "super-secret-key-change-this"
 
-    # 🔥 Cache Configuration (UNCHANGED)
+    # ================= CACHE CONFIG =================
     app.config["CACHE_TYPE"] = "simple"
     app.config["CACHE_DEFAULT_TIMEOUT"] = 300
     cache.init_app(app)
 
-    # 🔐 Login Manager Init (NEW)
+    # ================= LOGIN MANAGER =================
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
 
-    # 🔥 Logging Configuration (UNCHANGED)
+    # ================= LOGGING =================
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s"
     )
 
+    # ================= INIT USER DATABASE =================
+    # This will create user_info.db automatically if it doesn't exist
+    from .user_service import init_user_db
+    init_user_db()
+
+    # ================= REGISTER BLUEPRINTS =================
     from .routes import main
-    from .auth import auth   # NEW
+    from .auth import auth
 
     app.register_blueprint(main)
-    app.register_blueprint(auth)  # NEW
+    app.register_blueprint(auth)
 
     return app

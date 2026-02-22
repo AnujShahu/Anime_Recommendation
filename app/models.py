@@ -5,10 +5,9 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 db_path = os.path.join(BASE_DIR, "anime.db")
 
-
 class User(UserMixin):
-    def __init__(self, id_, username, email, password):
-        self.id = id_
+    def __init__(self, id, username, email, password):
+        self.id = str(id)
         self.username = username
         self.email = email
         self.password = password
