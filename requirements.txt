@@ -1,3 +1,4 @@
+flask-login
 flask
 pandas
 numpy
