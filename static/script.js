@@ -271,5 +271,30 @@ document.addEventListener("click", function (e) {
         redirectToGoogle(card.dataset.title);
     }
 });
+/* ================= LOGIN / REGISTER MODAL ================= */
+
+window.openLogin = function() {
+    document.getElementById("loginModal").classList.remove("hidden");
+}
+
+window.closeLogin = function() {
+    document.getElementById("loginModal").classList.add("hidden");
+}
+
+window.openRegister = function() {
+    document.getElementById("registerModal").classList.remove("hidden");
+}
+
+window.closeRegister = function() {
+    document.getElementById("registerModal").classList.add("hidden");
+}
+
+window.addEventListener("click", function(e) {
+    const loginModal = document.getElementById("loginModal");
+    const registerModal = document.getElementById("registerModal");
+
+    if (e.target === loginModal) closeLogin();
+    if (e.target === registerModal) closeRegister();
+});
 
 });
