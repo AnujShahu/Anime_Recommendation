@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
-	/* ================= GOOGLE REDIRECT ================= */
-	function redirectToGoogle(title) {
-  		  const query = encodeURIComponent(title + " anime");
-  		  window.open(`https://www.google.com/search?q=${query}`, "_blank");
-					}
-    
+
+    /* ================= GOOGLE REDIRECT ================= */
+    function redirectToGoogle(title) {
+        const query = encodeURIComponent(title + " anime");
+        window.open(`https://www.google.com/search?q=${query}`, "_blank");
+    }
+
     /* ================= ELEMENTS ================= */
     const searchTab = document.getElementById("searchTab");
     const genreTab = document.getElementById("genreTab");
@@ -20,6 +21,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const genreSearchBtn = document.getElementById("genreSearchBtn");
 
     const themeToggle = document.getElementById("themeToggle");
+
+    const loginModal = document.getElementById("loginModal");
+    const registerModal = document.getElementById("registerModal");
 
     let animeTitles = [];
     let selectedGenres = [];
@@ -230,17 +234,16 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             results.forEach(anime => {
-               genreResults.innerHTML += `
-    <div class="anime-card clickable-card"
-         data-title="${anime.title}">
-        <img src="${anime.image_url}"
-             class="anime-img"
-             onerror="this.src='/static/placeholder.jpg'">
-        <h3>${anime.title}</h3>
-        <p>${anime.genres}</p>
-        <p>⭐ ${anime.score}</p>
-    </div>
-`;
+                genreResults.innerHTML += `
+                <div class="anime-card clickable-card fade-in"
+                     data-title="${anime.title}">
+                    <img src="${anime.image_url}"
+                         class="anime-img"
+                         onerror="this.src='/static/placeholder.jpg'">
+                    <h3>${anime.title}</h3>
+                    <p>${anime.genres}</p>
+                    <p>⭐ ${anime.score}</p>
+                </div>`;
             });
 
             if (results.length === 20) {
@@ -251,8 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 genreResults.innerHTML += `
                     <button id="loadMoreBtn" class="search-btn">
                         Load More
-                    </button>
-                `;
+                    </button>`;
 
                 document.getElementById("loadMoreBtn")
                     .addEventListener("click", function () {
@@ -263,38 +265,41 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-   /* ================= CLICK HANDLER FOR SEARCH + RECOMMEND ================= */
-document.addEventListener("click", function (e) {
-    const card = e.target.closest(".clickable-card");
+    /* ================= CARD CLICK HANDLER ================= */
+    document.addEventListener("click", function (e) {
+        const card = e.target.closest(".clickable-card");
+        if (card && card.dataset.title) {
+            redirectToGoogle(card.dataset.title);
+        }
+    });
 
-    if (card && card.dataset.title) {
-        redirectToGoogle(card.dataset.title);
+    /* ================= MODAL CONTROLS ================= */
+
+    function openModal(modal) {
+        modal.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
     }
-});
-/* ================= LOGIN / REGISTER MODAL ================= */
 
-window.openLogin = function() {
-    document.getElementById("loginModal").classList.remove("hidden");
-}
+    function closeModal(modal) {
+        modal.classList.add("hidden");
+        document.body.style.overflow = "auto";
+    }
 
-window.closeLogin = function() {
-    document.getElementById("loginModal").classList.add("hidden");
-}
+    window.openLogin = () => openModal(loginModal);
+    window.closeLogin = () => closeModal(loginModal);
+    window.openRegister = () => openModal(registerModal);
+    window.closeRegister = () => closeModal(registerModal);
 
-window.openRegister = function() {
-    document.getElementById("registerModal").classList.remove("hidden");
-}
+    window.addEventListener("click", function(e) {
+        if (e.target === loginModal) closeModal(loginModal);
+        if (e.target === registerModal) closeModal(registerModal);
+    });
 
-window.closeRegister = function() {
-    document.getElementById("registerModal").classList.add("hidden");
-}
-
-window.addEventListener("click", function(e) {
-    const loginModal = document.getElementById("loginModal");
-    const registerModal = document.getElementById("registerModal");
-
-    if (e.target === loginModal) closeLogin();
-    if (e.target === registerModal) closeRegister();
-});
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") {
+            closeModal(loginModal);
+            closeModal(registerModal);
+        }
+    });
 
 });
