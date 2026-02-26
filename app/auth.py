@@ -6,8 +6,6 @@ from .user_service import UserService
 
 auth = Blueprint("auth", __name__)
 
-
-# ================= USER LOADER =================
 @login_manager.user_loader
 def load_user(user_id):
     user_data = UserService.get_user_by_id(user_id)
@@ -15,8 +13,6 @@ def load_user(user_id):
         return User(*user_data)
     return None
 
-
-# ================= REGISTER =================
 @auth.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -32,8 +28,6 @@ def register():
 
     return render_template("register.html")
 
-
-# ================= LOGIN =================
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -52,8 +46,6 @@ def login():
 
     return render_template("login.html")
 
-
-# ================= LOGOUT =================
 @auth.route("/logout")
 @login_required
 def logout():

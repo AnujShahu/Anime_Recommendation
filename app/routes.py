@@ -4,7 +4,11 @@ from .database import get_connection
 from . import cache
 import pandas as pd
 import logging
-
+from flask_login import current_user
+from flask_login import login_required, current_user
+from flask import abort, redirect, url_for
+import sqlite3
+import os
 main = Blueprint("main", __name__)
 
 
@@ -112,3 +116,37 @@ def search_by_genres():
     logging.info(f"Genre search: {selected_genres}")
 
     return jsonify(results)
+
+
+@main.route("/admin")
+@login_required
+def admin_panel():
+
+    if current_user.role not in ["admin", "superadmin"]:
+        abort(403)
+
+    USER_DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "user_info.db")
+    conn = sqlite3.connect(USER_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, username, email, role FROM users")
+    users = cursor.fetchall()
+    conn.close()
+
+    return render_template("admin.html", users=users)
+
+
+@main.route("/make_admin/<int:user_id>")
+@login_required
+def make_admin(user_id):
+
+    if current_user.role != "superadmin":
+        abort(403)
+
+    USER_DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "user_info.db")
+    conn = sqlite3.connect(USER_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET role='admin' WHERE id=?", (user_id,))
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("main.admin_panel"))

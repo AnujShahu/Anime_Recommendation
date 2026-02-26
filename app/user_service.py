@@ -10,17 +10,16 @@ def init_user_db():
     conn = sqlite3.connect(USER_DB_PATH)
     cursor = conn.cursor()
 
-    # Users table
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL
+        password TEXT NOT NULL,
+        role TEXT DEFAULT 'user'
     )
     """)
 
-    # Favorites table
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS favorites (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,7 +44,7 @@ class UserService:
 
         try:
             cursor.execute(
-                "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+                "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'user')",
                 (username, email, hashed_password)
             )
             conn.commit()
@@ -61,7 +60,7 @@ class UserService:
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT id, username, email, password FROM users WHERE email=?",
+            "SELECT id, username, email, password, role FROM users WHERE email=?",
             (email,)
         )
 
@@ -78,7 +77,7 @@ class UserService:
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT id, username, email, password FROM users WHERE id=?",
+            "SELECT id, username, email, password, role FROM users WHERE id=?",
             (user_id,)
         )
 
