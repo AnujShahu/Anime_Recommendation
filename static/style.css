@@ -1,5 +1,9 @@
 /* ================= GLOBAL ================= */
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
@@ -10,18 +14,22 @@ body {
 }
 
 .container {
-    max-width: 1300px;
+    max-width: 1200px;
     margin: auto;
     padding: 60px 20px;
     text-align: center;
     position: relative;
+    width: 90%;
 }
 
 .title {
     font-size: 3rem;
     margin-bottom: 30px;
     letter-spacing: 1px;
-    animation: fadeDown 1s ease;
+    background: linear-gradient(45deg,#ff4757,#6a11cb,#2575fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: fadeDown 1s ease, glowTitle 3s infinite alternate;
 }
 
 /* ================= THEME BUTTON ================= */
@@ -51,11 +59,12 @@ body {
     display: flex;
     justify-content: center;
     margin-bottom: 35px;
+    flex-wrap: wrap;
 }
 
 .tab {
     padding: 12px 30px;
-    margin: 0 12px;
+    margin: 8px;
     border: none;
     border-radius: 40px;
     cursor: pointer;
@@ -79,6 +88,7 @@ body {
 .search-wrapper {
     position: relative;
     width: 60%;
+    max-width: 600px;
     margin: 0 auto 20px auto;
 }
 
@@ -109,7 +119,7 @@ body {
 }
 
 .search-btn:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
     box-shadow: 0 0 20px rgba(255,71,87,0.6);
 }
 
@@ -134,7 +144,7 @@ body {
 }
 
 .genre-btn:hover {
-    background: linear-gradient(45deg,#6a11cb,#2575fc);
+    background: linear-gradient(45deg,#ff00cc,#3333ff);
     transform: translateY(-4px);
     box-shadow: 0 0 15px rgba(37,117,252,0.6);
 }
@@ -160,18 +170,24 @@ body {
     border-radius: 20px;
     transition: all 0.4s ease;
     animation: fadeUp 0.8s ease;
+    cursor: pointer;
 }
 
 .anime-card:hover {
     transform: translateY(-10px) scale(1.03);
-    box-shadow: 0 0 30px rgba(255,71,87,0.5);
+    box-shadow: 0 0 40px rgba(106,17,203,0.6);
 }
 
 .anime-img {
     width: 100%;
-    height: 400px;
+    height: 350px;
     object-fit: cover;
     border-radius: 15px;
+    transition: 0.3s;
+}
+
+.anime-card:hover .anime-img {
+    transform: scale(1.05);
 }
 
 /* ================= AUTOCOMPLETE ================= */
@@ -187,8 +203,6 @@ body {
     text-align: left;
     z-index: 1000;
     animation: fadeUp 0.3s ease;
-    max-height: 220px;
-overflow-y: auto;
 }
 
 .suggestion-item {
@@ -197,8 +211,10 @@ overflow-y: auto;
     transition: 0.2s;
 }
 
-.suggestion-item:hover {
-    background: #ff4757;
+.suggestion-item:hover,
+.active-suggestion {
+    background: linear-gradient(45deg,#ff4757,#ff6b81);
+    color: white;
 }
 
 /* ================= LOADER ================= */
@@ -217,40 +233,7 @@ overflow-y: auto;
     display: none;
 }
 
-/* ================= ANIMATIONS ================= */
-
-@keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes spin {
-    100% { transform: rotate(360deg); }
-}
-
-/* ================= LIGHT MODE ================= */
-
-body.light-mode {
-    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-    color: #111;
-}
-
-body.light-mode .anime-card {
-    background: rgba(0,0,0,0.05);
-}
-.active-suggestion {
-    background: linear-gradient(45deg,#ff4757,#ff6b81);
-    color: white;
-}
-.clickable-card {
-    cursor: pointer;
-}
-/* ================= MODAL UPGRADE ================= */
+/* ================= MODAL ================= */
 
 .modal {
     position: fixed;
@@ -276,19 +259,14 @@ body.light-mode .anime-card {
     backdrop-filter: blur(20px);
     padding: 40px 35px;
     border-radius: 25px;
-    width: 350px;
+    width: 90%;
+    max-width: 400px;
     text-align: center;
     position: relative;
     animation: popUp 0.4s ease;
     box-shadow: 0 0 40px rgba(255,71,87,0.4);
 }
 
-.modal-content h2 {
-    margin-bottom: 25px;
-    font-size: 1.8rem;
-}
-
-/* Input styling */
 .modal-content input {
     width: 100%;
     padding: 12px;
@@ -297,15 +275,13 @@ body.light-mode .anime-card {
     border: none;
     outline: none;
     font-size: 14px;
-    transition: 0.3s;
 }
 
 .modal-content input:focus {
     box-shadow: 0 0 15px #ff4757;
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
 
-/* Close button */
 .close {
     position: absolute;
     top: 15px;
@@ -320,38 +296,6 @@ body.light-mode .anime-card {
     transform: rotate(90deg);
 }
 
-/* Pop animation */
-@keyframes popUp {
-    from {
-        opacity: 0;
-        transform: scale(0.8) translateY(40px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-/* ================= VIBRANT ANIME GLOW ================= */
-
-.title {
-    background: linear-gradient(45deg,#ff4757,#6a11cb,#2575fc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: glowTitle 3s infinite alternate;
-}
-
-@keyframes glowTitle {
-    from { text-shadow: 0 0 10px rgba(255,71,87,0.6); }
-    to { text-shadow: 0 0 25px rgba(106,17,203,0.8); }
-}
-
-.anime-card:hover {
-    box-shadow: 0 0 40px rgba(106,17,203,0.6);
-}
-
-.genre-btn:hover {
-    background: linear-gradient(45deg,#ff00cc,#3333ff);
-}
 /* ================= USER DROPDOWN ================= */
 
 .user-menu {
@@ -384,7 +328,6 @@ body.light-mode .anime-card {
     width: 200px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     overflow: hidden;
-    animation: fadeDown 0.3s ease;
 }
 
 .dropdown-item {
@@ -394,12 +337,92 @@ body.light-mode .anime-card {
     text-align: left;
 }
 
+.dropdown-item:hover {
+    background: linear-gradient(45deg,#ff4757,#6a11cb);
+}
+
 .dropdown-item a {
     color: white;
     text-decoration: none;
 }
 
-.dropdown-item:hover {
-    background: linear-gradient(45deg,#ff4757,#6a11cb);
-    color: white;
+/* ================= LIGHT MODE ================= */
+
+body.light-mode {
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    color: #111;
+}
+
+body.light-mode .anime-card {
+    background: rgba(0,0,0,0.05);
+}
+
+/* ================= ANIMATIONS ================= */
+
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes popUp {
+    from { opacity: 0; transform: scale(0.8) translateY(40px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes glowTitle {
+    from { text-shadow: 0 0 10px rgba(255,71,87,0.6); }
+    to { text-shadow: 0 0 25px rgba(106,17,203,0.8); }
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 992px) {
+    .search-wrapper {
+        width: 80%;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .tabs {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .search-wrapper {
+        width: 100%;
+    }
+
+    .search-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .anime-img {
+        height: 250px;
+    }
+
+    .theme-toggle {
+        top: 15px;
+        right: 15px;
+        padding: 8px 18px;
+    }
+
+    .user-menu {
+        top: 15px;
+        left: 15px;
+    }
 }
