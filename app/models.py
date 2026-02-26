@@ -83,3 +83,29 @@ class User(UserMixin):
         )
         conn.commit()
         conn.close()
+    @staticmethod
+    def count_all():
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM users")
+        count = cursor.fetchone()[0]
+        conn.close()
+        return count
+
+    @staticmethod
+    def count_admins():
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM users WHERE is_admin=1")
+        count = cursor.fetchone()[0]
+        conn.close()
+        return count
+
+    @staticmethod
+    def get_recent_users(limit=5):
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, username, email, password, is_admin FROM users ORDER BY id DESC LIMIT ?", (limit,))
+        users = cursor.fetchall()
+        conn.close()
+        return users

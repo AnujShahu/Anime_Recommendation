@@ -150,3 +150,23 @@ def make_admin(user_id):
     conn.close()
 
     return redirect(url_for("main.admin_panel"))
+from flask_login import login_required, current_user
+from app.models import User
+from flask import render_template
+
+@app.route("/admin/dashboard")
+@login_required
+def admin_dashboard():
+    if not current_user.is_admin:
+        return "Access Denied", 403
+
+    total_users = User.count_all()
+    total_admins = User.count_admins()
+    recent_users = User.get_recent_users()
+
+    return render_template(
+        "admin_dashboard.html",
+        total_users=total_users,
+        total_admins=total_admins,
+        recent_users=recent_users
+    )
