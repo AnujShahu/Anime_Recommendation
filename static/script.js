@@ -301,5 +301,19 @@ document.addEventListener("DOMContentLoaded", function () {
             closeModal(registerModal);
         }
     });
+/* ================= USER DROPDOWN ================= */
 
+const userMenuBtn = document.getElementById("userMenuBtn");
+const userDropdown = document.getElementById("userDropdown");
+
+if (userMenuBtn) {
+    userMenuBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        userDropdown.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", function () {
+        userDropdown.classList.add("hidden");
+    });
+}
 });

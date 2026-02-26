@@ -9,20 +9,35 @@
 <div class="container">
 
     <!-- USER STATUS BAR -->
-    <div class="user-bar">
-        {% if current_user.is_authenticated %}
-            <p>
-                👋 Welcome, <strong>{{ current_user.username }}</strong> |
-                <a href="{{ url_for('auth.logout') }}">Logout</a>
-            </p>
-        {% else %}
-            <p>
-                👤 Browsing as <strong>Guest</strong> |
-                <a href="#" onclick="openLogin()">Login</a> |
-                <a href="#" onclick="openRegister()">Register</a>
-            </p>
-        {% endif %}
+   <!-- ================= USER DROPDOWN MENU ================= -->
+<div class="user-menu">
+    <div class="settings-icon" id="userMenuBtn">
+        ⚙
     </div>
+
+    <div class="dropdown hidden" id="userDropdown">
+
+        {% if current_user.is_authenticated %}
+            <div class="dropdown-item">
+                👋 {{ current_user.username }}
+            </div>
+            <div class="dropdown-item">
+                <a href="{{ url_for('auth.logout') }}">Logout</a>
+            </div>
+        {% else %}
+            <div class="dropdown-item" id="browseGuest">
+                Browse as Guest
+            </div>
+            <div class="dropdown-item" onclick="openLogin()">
+                Login
+            </div>
+            <div class="dropdown-item" onclick="openRegister()">
+                Register
+            </div>
+        {% endif %}
+
+    </div>
+</div>
 
     <h1 class="title">🎌 Anime Recommendation System</h1>
 
