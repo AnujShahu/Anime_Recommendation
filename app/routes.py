@@ -154,7 +154,7 @@ from flask_login import login_required, current_user
 from app.models import User
 from flask import render_template
 
-@app.route("/admin/dashboard")
+@main.route("/admin/dashboard")
 @login_required
 def admin_dashboard():
     if not current_user.is_admin:
