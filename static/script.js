@@ -25,6 +25,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const loginModal = document.getElementById("loginModal");
     const registerModal = document.getElementById("registerModal");
 
+    const userMenuBtn = document.getElementById("userMenuBtn");
+    const userDropdown = document.getElementById("userDropdown");
+
     let animeTitles = [];
     let selectedGenres = [];
     let currentFocus = -1;
@@ -32,52 +35,61 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentPage = 1;
 
     /* ================= THEME TOGGLE ================= */
-    if (localStorage.getItem("theme") === "light") {
-        document.body.classList.add("light-mode");
-        themeToggle.textContent = "☀ Light Mode";
+    if (themeToggle) {
+
+        if (localStorage.getItem("theme") === "light") {
+            document.body.classList.add("light-mode");
+            themeToggle.textContent = "☀ Light Mode";
+        }
+
+        themeToggle.addEventListener("click", function () {
+            document.body.classList.toggle("light-mode");
+
+            if (document.body.classList.contains("light-mode")) {
+                localStorage.setItem("theme", "light");
+                themeToggle.textContent = "☀ Light Mode";
+            } else {
+                localStorage.setItem("theme", "dark");
+                themeToggle.textContent = "🌙 Dark Mode";
+            }
+        });
     }
 
-    themeToggle.addEventListener("click", function () {
-        document.body.classList.toggle("light-mode");
-
-        if (document.body.classList.contains("light-mode")) {
-            localStorage.setItem("theme", "light");
-            themeToggle.textContent = "☀ Light Mode";
-        } else {
-            localStorage.setItem("theme", "dark");
-            themeToggle.textContent = "🌙 Dark Mode";
-        }
-    });
-
     /* ================= TAB SWITCH ================= */
-    searchTab.addEventListener("click", function () {
-        searchTab.classList.add("active");
-        genreTab.classList.remove("active");
-        searchSection.classList.remove("hidden");
-        genreSection.classList.add("hidden");
-    });
+    if (searchTab && genreTab && searchSection && genreSection) {
 
-    genreTab.addEventListener("click", function () {
-        genreTab.classList.add("active");
-        searchTab.classList.remove("active");
-        genreSection.classList.remove("hidden");
-        searchSection.classList.add("hidden");
-    });
+        searchTab.addEventListener("click", function () {
+            searchTab.classList.add("active");
+            genreTab.classList.remove("active");
+            searchSection.classList.remove("hidden");
+            genreSection.classList.add("hidden");
+        });
+
+        genreTab.addEventListener("click", function () {
+            genreTab.classList.add("active");
+            searchTab.classList.remove("active");
+            genreSection.classList.remove("hidden");
+            searchSection.classList.add("hidden");
+        });
+    }
 
     /* ================= LOAD TITLES ================= */
-    fetch("/get_anime_titles")
-        .then(res => res.json())
-        .then(data => animeTitles = data.titles || []);
+    if (searchInput && suggestionsBox) {
+        fetch("/get_anime_titles")
+            .then(res => res.json())
+            .then(data => animeTitles = data.titles || []);
 
-    /* ================= AUTOCOMPLETE ================= */
-    searchInput.addEventListener("input", function () {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-            showSuggestions(this.value.trim());
-        }, 150);
-    });
+        searchInput.addEventListener("input", function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                showSuggestions(this.value.trim());
+            }, 150);
+        });
+    }
 
     function showSuggestions(query) {
+        if (!suggestionsBox) return;
+
         suggestionsBox.innerHTML = "";
         currentFocus = -1;
         if (!query) return;
@@ -101,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
             div.addEventListener("click", function () {
                 searchInput.value = item.title;
                 suggestionsBox.innerHTML = "";
-                searchForm.submit();
+                if (searchForm) searchForm.submit();
             });
 
             suggestionsBox.appendChild(div);
@@ -124,94 +136,39 @@ document.addEventListener("DOMContentLoaded", function () {
         return title.replace(regex, "<strong>$1</strong>");
     }
 
-    /* ================= KEYBOARD NAVIGATION ================= */
-    searchInput.addEventListener("keydown", function (e) {
+    /* ================= GENRE SYSTEM (SAFE) ================= */
+    if (genreContainer && genreSearchBtn && genreResults) {
 
-        const items = suggestionsBox.getElementsByClassName("suggestion-item");
-        if (!items.length) return;
+        fetch("/get_genres")
+            .then(res => res.json())
+            .then(genres => {
+                genres.forEach(genre => {
+                    const btn = document.createElement("button");
+                    btn.classList.add("genre-btn");
+                    btn.textContent = genre;
 
-        if (e.key === "ArrowDown") {
-            e.preventDefault();
-            currentFocus++;
-            addActive(items);
-        }
+                    btn.addEventListener("click", function () {
+                        btn.classList.toggle("selected");
 
-        else if (e.key === "ArrowUp") {
-            e.preventDefault();
-            currentFocus--;
-            addActive(items);
-        }
+                        if (selectedGenres.includes(genre)) {
+                            selectedGenres = selectedGenres.filter(g => g !== genre);
+                        } else {
+                            selectedGenres.push(genre);
+                        }
+                    });
 
-        else if (e.key === "Enter") {
-            if (currentFocus > -1 && items[currentFocus]) {
-                e.preventDefault();
-                items[currentFocus].click();
-            }
-        }
-
-        else if (e.key === "PageDown") {
-            e.preventDefault();
-            suggestionsBox.scrollTop += suggestionsBox.clientHeight;
-        }
-
-        else if (e.key === "PageUp") {
-            e.preventDefault();
-            suggestionsBox.scrollTop -= suggestionsBox.clientHeight;
-        }
-
-        else if (e.key === "Escape") {
-            suggestionsBox.innerHTML = "";
-            currentFocus = -1;
-        }
-    });
-
-    function addActive(items) {
-        removeActive(items);
-
-        if (currentFocus >= items.length) currentFocus = 0;
-        if (currentFocus < 0) currentFocus = items.length - 1;
-
-        items[currentFocus].classList.add("active-suggestion");
-        items[currentFocus].scrollIntoView({ block: "nearest", behavior: "smooth" });
-    }
-
-    function removeActive(items) {
-        for (let item of items) {
-            item.classList.remove("active-suggestion");
-        }
-    }
-
-    /* ================= LOAD GENRES ================= */
-    fetch("/get_genres")
-        .then(res => res.json())
-        .then(genres => {
-            genres.forEach(genre => {
-
-                const btn = document.createElement("button");
-                btn.classList.add("genre-btn");
-                btn.textContent = genre;
-
-                btn.addEventListener("click", function () {
-                    btn.classList.toggle("selected");
-
-                    if (selectedGenres.includes(genre)) {
-                        selectedGenres = selectedGenres.filter(g => g !== genre);
-                    } else {
-                        selectedGenres.push(genre);
-                    }
+                    genreContainer.appendChild(btn);
                 });
-
-                genreContainer.appendChild(btn);
             });
-        });
 
-    /* ================= SEARCH BY GENRE ================= */
-    genreSearchBtn.addEventListener("click", function () {
-        currentPage = 1;
-        loadGenreResults();
-    });
+        genreSearchBtn.addEventListener("click", function () {
+            currentPage = 1;
+            loadGenreResults();
+        });
+    }
 
     function loadGenreResults() {
+        if (!genreResults) return;
 
         genreResults.innerHTML = `<div class="loader"></div>`;
 
@@ -228,44 +185,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (currentPage === 1) genreResults.innerHTML = "";
 
-            if (!results.length && currentPage === 1) {
-                genreResults.innerHTML = "<p>No anime found.</p>";
-                return;
-            }
-
             results.forEach(anime => {
                 genreResults.innerHTML += `
-                <div class="anime-card clickable-card fade-in"
+                <div class="anime-card clickable-card"
                      data-title="${anime.title}">
-                    <img src="${anime.image_url}"
-                         class="anime-img"
-                         onerror="this.src='/static/placeholder.jpg'">
+                    <img src="${anime.image_url}" class="anime-img">
                     <h3>${anime.title}</h3>
                     <p>${anime.genres}</p>
                     <p>⭐ ${anime.score}</p>
                 </div>`;
             });
-
-            if (results.length === 20) {
-
-                const existingBtn = document.getElementById("loadMoreBtn");
-                if (existingBtn) existingBtn.remove();
-
-                genreResults.innerHTML += `
-                    <button id="loadMoreBtn" class="search-btn">
-                        Load More
-                    </button>`;
-
-                document.getElementById("loadMoreBtn")
-                    .addEventListener("click", function () {
-                        currentPage++;
-                        loadGenreResults();
-                    });
-            }
         });
     }
 
-    /* ================= CARD CLICK HANDLER ================= */
+    /* ================= CARD REDIRECT ================= */
     document.addEventListener("click", function (e) {
         const card = e.target.closest(".clickable-card");
         if (card && card.dataset.title) {
@@ -273,14 +206,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    /* ================= MODAL CONTROLS ================= */
-
+    /* ================= MODALS ================= */
     function openModal(modal) {
+        if (!modal) return;
         modal.classList.remove("hidden");
         document.body.style.overflow = "hidden";
     }
 
     function closeModal(modal) {
+        if (!modal) return;
         modal.classList.add("hidden");
         document.body.style.overflow = "auto";
     }
@@ -290,53 +224,21 @@ document.addEventListener("DOMContentLoaded", function () {
     window.openRegister = () => openModal(registerModal);
     window.closeRegister = () => closeModal(registerModal);
 
-    window.addEventListener("click", function(e) {
-        if (e.target === loginModal) closeModal(loginModal);
-        if (e.target === registerModal) closeModal(registerModal);
-    });
-
-    document.addEventListener("keydown", function(e) {
-        if (e.key === "Escape") {
-            closeModal(loginModal);
-            closeModal(registerModal);
-        }
-    });
-/* ================= USER DROPDOWN ================= */
-
-const userMenuBtn = document.getElementById("userMenuBtn");
-const userDropdown = document.getElementById("userDropdown");
-
-if (userMenuBtn) {
-    userMenuBtn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        userDropdown.classList.toggle("hidden");
-    });
-
     /* ================= USER DROPDOWN ================= */
+    if (userMenuBtn && userDropdown) {
 
-const userMenuBtn = document.getElementById("userMenuBtn");
-const userDropdown = document.getElementById("userDropdown");
+        userMenuBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            userDropdown.classList.toggle("hidden");
+        });
 
-if (userMenuBtn && userDropdown) {
+        userDropdown.addEventListener("click", function (e) {
+            e.stopPropagation();
+        });
 
-    userMenuBtn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        userDropdown.classList.toggle("hidden");
-    });
-
-    // Prevent closing when clicking inside dropdown
-    userDropdown.addEventListener("click", function (e) {
-        e.stopPropagation();
-    });
-
-    // Close when clicking outside
-    document.addEventListener("click", function (e) {
-        if (!userMenuBtn.contains(e.target) &&
-            !userDropdown.contains(e.target)) {
+        document.addEventListener("click", function () {
             userDropdown.classList.add("hidden");
-        }
-    });
+        });
+    }
 
-}
-}
 });
