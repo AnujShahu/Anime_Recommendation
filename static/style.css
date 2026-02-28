@@ -426,3 +426,98 @@ body.light-mode .anime-card {
         left: 15px;
     }
 }
+/* SECTION */
+.genre-section {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.genre-title {
+    font-size: 32px;
+    color: #fff;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+/* UNDERLINE ANIMATION */
+.genre-title::after {
+    content: "";
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, #ff416c, #ff4b2b);
+    display: block;
+    margin: 10px auto 0;
+    transition: 0.4s ease;
+}
+
+.genre-title:hover::after {
+    width: 50%;
+}
+
+/* CONTAINER */
+.genre-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* GENRE CARD */
+.genre-card {
+    padding: 15px 30px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid transparent;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* GRADIENT BORDER EFFECT */
+.genre-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    padding: 2px;
+    background: linear-gradient(45deg, #ff416c, #ff4b2b, #1e90ff);
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: 0.4s;
+}
+
+.genre-card:hover::before {
+    opacity: 1;
+}
+
+/* HOVER ANIMATION */
+.genre-card:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(255, 75, 43, 0.5);
+    color: #fff;
+}
+
+/* CLICK EFFECT */
+.genre-card:active {
+    transform: scale(0.95);
+}
+body {
+    background: linear-gradient(-45deg, #141e30, #243b55, #000000);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
