@@ -46,7 +46,6 @@
             <div class="dropdown-item">
                 <a href="{{ url_for('auth.logout') }}">Logout</a>
             </div>
-
         {% else %}
             <div class="dropdown-item" onclick="openLogin()">Login</div>
             <div class="dropdown-item" onclick="openRegister()">Register</div>
@@ -58,20 +57,27 @@
 
 <button id="themeToggle" class="theme-toggle">🌙 Dark Mode</button>
 
+<!-- TABS -->
 <div class="tabs">
     <button id="searchTab" class="tab active">Search by Name</button>
     <button id="genreTab" class="tab">Browse by Genre</button>
 </div>
 
-<!-- SEARCH SECTION -->
+<!-- ================= SEARCH SECTION ================= -->
 <div id="searchSection">
 
 <form method="POST" id="searchForm">
     <div class="search-wrapper">
-        <input type="text" id="searchInput" name="anime_name"
-               placeholder="Search Anime..." autocomplete="off" required>
+        <input type="text"
+               id="searchInput"
+               name="anime_name"
+               placeholder="Search Anime..."
+               autocomplete="off"
+               required>
+
         <div id="suggestions" class="suggestions-box"></div>
     </div>
+
     <button type="submit" class="search-btn">Search</button>
 </form>
 
@@ -94,6 +100,7 @@
 
 {% if recommendations %}
 <h2 class="recommend-title">Recommended Anime</h2>
+
 <div class="recommend-grid">
 {% for rec in recommendations %}
     <div class="anime-card clickable-card"
@@ -108,27 +115,52 @@
 {% endif %}
 
 </div>
-</div>
+<!-- END SEARCH SECTION -->
 
-<!-- LOGIN MODAL -->
+
+<!-- ================= GENRE SECTION ================= -->
+<div id="genreSection" class="hidden">
+
+    <h2 class="recommend-title">Browse by Genre</h2>
+
+    <!-- Genre buttons load here dynamically -->
+    <div id="genreContainer" class="genre-container"></div>
+
+    <button id="genreSearchBtn" class="search-btn">
+        Search by Selected Genres
+    </button>
+
+    <!-- Results load here -->
+    <div id="genreResults" class="recommend-grid"></div>
+
+</div>
+<!-- END GENRE SECTION -->
+
+</div> <!-- END CONTAINER -->
+
+
+<!-- ================= LOGIN MODAL ================= -->
 <div id="loginModal" class="modal hidden">
     <div class="modal-content">
         <span class="close" onclick="closeLogin()">&times;</span>
         <h2>Login</h2>
+
         <form method="POST" action="{{ url_for('auth.login') }}">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
-            <a href="#" onclick="openForgot()">Forgot Password?</a>
+            <a href="#">Forgot Password?</a>
             <button type="submit" class="search-btn">Login</button>
         </form>
     </div>
 </div>
 
-<!-- REGISTER MODAL -->
+
+<!-- ================= REGISTER MODAL ================= -->
 <div id="registerModal" class="modal hidden">
     <div class="modal-content">
         <span class="close" onclick="closeRegister()">&times;</span>
         <h2>Register</h2>
+
         <form method="POST" action="{{ url_for('auth.register') }}">
             <input type="text" name="username" placeholder="Username" required>
             <input type="email" name="email" placeholder="Email" required>
@@ -139,5 +171,6 @@
 </div>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
+
 </body>
 </html>
