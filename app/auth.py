@@ -1,11 +1,13 @@
 from flask import Blueprint, request, redirect, url_for, flash, current_app
 from flask_login import login_user, logout_user, login_required
 from itsdangerous import URLSafeTimedSerializer
+from werkzeug.security import generate_password_hash
 from .models import User
 from . import login_manager
 from .user_service import UserService
 
 auth = Blueprint("auth", __name__)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -24,9 +26,6 @@ def register():
 
     success, message = UserService.create_user(username, email, password)
     flash(message)
-
-    if success:
-        flash("Registration successful! Please log in.")
     return redirect(url_for("main.home"))
 
 
@@ -42,9 +41,9 @@ def login():
         user_obj = User(*user_data)
         login_user(user_obj)
         flash("Logged in successfully!")
-        return redirect(url_for("main.home"))
+    else:
+        flash("Invalid email or password!")
 
-    flash("Invalid email or password!")
     return redirect(url_for("main.home"))
 
 
@@ -53,7 +52,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash("You are now browsing as Guest.")
+    flash("Logged out successfully.")
     return redirect(url_for("main.home"))
 
 
@@ -75,7 +74,6 @@ def verify_reset_token(token, expiration=3600):
 @auth.route("/forgot-password", methods=["POST"])
 def forgot_password():
     email = request.form.get("email")
-
     user = UserService.get_user_by_email(email)
 
     if user:
@@ -99,12 +97,12 @@ def reset_password(token):
     if request.method == "POST":
         new_password = request.form.get("password")
         UserService.update_password(email, new_password)
-        flash("Password updated successfully! Please login.")
+        flash("Password updated successfully!")
         return redirect(url_for("main.home"))
 
-    return f'''
+    return """
     <form method="POST">
         <input type="password" name="password" placeholder="New Password" required>
-        <button type="submit">Reset Password</button>
+        <button type="submit">Reset</button>
     </form>
-    '''
+    """

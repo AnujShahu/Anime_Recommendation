@@ -312,8 +312,31 @@ if (userMenuBtn) {
         userDropdown.classList.toggle("hidden");
     });
 
-    document.addEventListener("click", function () {
-        userDropdown.classList.add("hidden");
+    /* ================= USER DROPDOWN ================= */
+
+const userMenuBtn = document.getElementById("userMenuBtn");
+const userDropdown = document.getElementById("userDropdown");
+
+if (userMenuBtn && userDropdown) {
+
+    userMenuBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        userDropdown.classList.toggle("hidden");
     });
+
+    // Prevent closing when clicking inside dropdown
+    userDropdown.addEventListener("click", function (e) {
+        e.stopPropagation();
+    });
+
+    // Close when clicking outside
+    document.addEventListener("click", function (e) {
+        if (!userMenuBtn.contains(e.target) &&
+            !userDropdown.contains(e.target)) {
+            userDropdown.classList.add("hidden");
+        }
+    });
+
+}
 }
 });
