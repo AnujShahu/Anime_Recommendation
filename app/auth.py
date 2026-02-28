@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required
 from .models import User
 from . import login_manager
@@ -15,37 +15,38 @@ def load_user(user_id):
     return None
 
 
-@auth.route("/register", methods=["POST"])
+@auth.route("/register", methods=["GET", "POST"])
 def register():
-    username = request.form.get("username")
-    email = request.form.get("email")
-    password = request.form.get("password")
+    if request.method == "POST":
+        username = request.form.get("username")
+        email = request.form.get("email")
+        password = request.form.get("password")
 
-  success, message = UserService.create_user(username, email, password)
+        success, message = UserService.create_user(username, email, password)
+        flash(message)
 
-if success:
-    flash("Account created successfully! Please login now.")
-else:
-    flash(message)
+        if success:
+            return redirect(url_for("main.home"))
 
-return redirect(url_for("main.home"))
+    return redirect(url_for("main.home"))
 
 
-@auth.route("/login", methods=["POST"])
+@auth.route("/login", methods=["GET", "POST"])
 def login():
-    email = request.form.get("email")
-    password = request.form.get("password")
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
 
-    user_data = UserService.authenticate_user(email, password)
+        user_data = UserService.authenticate_user(email, password)
 
-    if user_data:
-        user_obj = User(*user_data)
-        login_user(user_obj)
-        flash("Logged in successfully!")
-    else:
-        flash("Invalid credentials!")
+        if user_data:
+            user_obj = User(*user_data)
+            login_user(user_obj)
+            flash("Logged in successfully!")
+            return redirect(url_for("main.home"))
 
-    # Always return to homepage (modal UI)
+        flash("Invalid email or password!")
+
     return redirect(url_for("main.home"))
 
 
