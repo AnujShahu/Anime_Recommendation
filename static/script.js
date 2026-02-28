@@ -182,15 +182,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /* ================= LOAD GENRES ================= */
-fetch("/get_genres")
+    fetch("/get_genres")
+        .then(res => res.json())
+        .then(genres => {
+            genres.forEach(genre => {
+
+                const btn = document.createElement("button");
+                btn.classList.add("genre-btn");
+                btn.textContent = genre;
+
+                btn.addEventListener("click", function () {
+                    btn.classList.toggle("selected");
+
+                    if (selectedGenres.includes(genre)) {
+                        selectedGenres = selectedGenres.filter(g => g !== genre);
+                    } else {
+                        selectedGenres.push(genre);
+                    }
+                });
+
+                genreContainer.appendChild(btn);
+            });
+        });
 
     /* ================= SEARCH BY GENRE ================= */
-   if (genreSearchBtn) {
     genreSearchBtn.addEventListener("click", function () {
         currentPage = 1;
         loadGenreResults();
     });
-}
 
     function loadGenreResults() {
 
@@ -287,6 +306,17 @@ fetch("/get_genres")
 const userMenuBtn = document.getElementById("userMenuBtn");
 const userDropdown = document.getElementById("userDropdown");
 
+if (userMenuBtn) {
+    userMenuBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        userDropdown.classList.toggle("hidden");
+    });
+
+    /* ================= USER DROPDOWN ================= */
+
+const userMenuBtn = document.getElementById("userMenuBtn");
+const userDropdown = document.getElementById("userDropdown");
+
 if (userMenuBtn && userDropdown) {
 
     userMenuBtn.addEventListener("click", function (e) {
@@ -294,10 +324,12 @@ if (userMenuBtn && userDropdown) {
         userDropdown.classList.toggle("hidden");
     });
 
+    // Prevent closing when clicking inside dropdown
     userDropdown.addEventListener("click", function (e) {
         e.stopPropagation();
     });
 
+    // Close when clicking outside
     document.addEventListener("click", function (e) {
         if (!userMenuBtn.contains(e.target) &&
             !userDropdown.contains(e.target)) {
