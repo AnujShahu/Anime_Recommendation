@@ -10,127 +10,126 @@
 
 <div class="container">
 
-    <!-- USER STATUS BAR -->
-   <!-- ================= USER DROPDOWN MENU ================= -->
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="flash-container">
+      {% for message in messages %}
+        <div class="flash-message">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- USER MENU -->
 <div class="user-menu">
     <div class="settings-icon" id="userMenuBtn">
-        ⚙
+        {% if current_user.is_authenticated %}
+            👤
+        {% else %}
+            ⚙
+        {% endif %}
     </div>
 
     <div class="dropdown hidden" id="userDropdown">
-
         {% if current_user.is_authenticated %}
             <div class="dropdown-item">
                 👋 {{ current_user.username }}
             </div>
+
+            <div class="dropdown-item">
+                Role: {{ current_user.role }}
+            </div>
+
             <div class="dropdown-item">
                 <a href="{{ url_for('auth.logout') }}">Logout</a>
             </div>
+
         {% else %}
-            <div class="dropdown-item" id="browseGuest">
-                Browse as Guest
-            </div>
-            <div class="dropdown-item" onclick="openLogin()">
-                Login
-            </div>
-            <div class="dropdown-item" onclick="openRegister()">
-                Register
-            </div>
+            <div class="dropdown-item" onclick="openLogin()">Login</div>
+            <div class="dropdown-item" onclick="openRegister()">Register</div>
         {% endif %}
-
     </div>
 </div>
 
-    <h1 class="title">🎌 Anime Recommendation System</h1>
+<h1 class="title">🎌 Anime Recommendation System</h1>
 
-    <button id="themeToggle" class="theme-toggle">🌙 Dark Mode</button>
+<button id="themeToggle" class="theme-toggle">🌙 Dark Mode</button>
 
-    <div class="tabs">
-        <button id="searchTab" class="tab active">Search by Name</button>
-        <button id="genreTab" class="tab">Browse by Genre</button>
-    </div>
-
-    <!-- SEARCH SECTION -->
-    <div id="searchSection">
-
-        <form method="POST" id="searchForm">
-
-            <div class="search-wrapper">
-                <input type="text"
-                       id="searchInput"
-                       name="anime_name"
-                       placeholder="Search Anime..."
-                       autocomplete="off"
-                       required>
-
-                <div id="suggestions" class="suggestions-box"></div>
-            </div>
-
-            <button type="submit" class="search-btn">Search</button>
-        </form>
-
-        <div id="loader" class="loader hidden"></div>
-
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
-
-        {% if anime %}
-            <div class="anime-card main-anime clickable-card"
-                 data-title="{{ anime.title }}">
-                <img src="{{ anime.image_url }}" class="anime-img">
-                <h2>{{ anime.title }}</h2>
-                <p><strong>Genres:</strong> {{ anime.genres }}</p>
-                <p><strong>Score:</strong> ⭐ {{ anime.score }}</p>
-                <p><strong>Episodes:</strong> {{ anime.episodes }}</p>
-            </div>
-        {% endif %}
-
-        {% if recommendations %}
-            <h2 class="recommend-title">Recommended Anime</h2>
-            <div class="recommend-grid">
-                {% for rec in recommendations %}
-                    <div class="anime-card clickable-card"
-                         data-title="{{ rec.title }}">
-                        <img src="{{ rec.image_url }}" class="anime-img">
-                        <h3>{{ rec.title }}</h3>
-                        <p>{{ rec.genres }}</p>
-                        <p>⭐ {{ rec.score }}</p>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-    </div>
-
-    <!-- GENRE SECTION -->
-    <div id="genreSection" class="hidden">
-        <div id="genreContainer" class="genre-grid"></div>
-        <button id="genreSearchBtn" class="search-btn">Find Anime</button>
-        <div id="genreResults" class="recommend-grid"></div>
-    </div>
-
+<div class="tabs">
+    <button id="searchTab" class="tab active">Search by Name</button>
+    <button id="genreTab" class="tab">Browse by Genre</button>
 </div>
 
-<!-- ================= LOGIN MODAL ================= -->
+<!-- SEARCH SECTION -->
+<div id="searchSection">
+
+<form method="POST" id="searchForm">
+    <div class="search-wrapper">
+        <input type="text" id="searchInput" name="anime_name"
+               placeholder="Search Anime..." autocomplete="off" required>
+        <div id="suggestions" class="suggestions-box"></div>
+    </div>
+    <button type="submit" class="search-btn">Search</button>
+</form>
+
+<div id="loader" class="loader hidden"></div>
+
+{% if error %}
+<p class="error">{{ error }}</p>
+{% endif %}
+
+{% if anime %}
+<div class="anime-card main-anime clickable-card"
+     data-title="{{ anime.title }}">
+    <img src="{{ anime.image_url }}" class="anime-img">
+    <h2>{{ anime.title }}</h2>
+    <p><strong>Genres:</strong> {{ anime.genres }}</p>
+    <p><strong>Score:</strong> ⭐ {{ anime.score }}</p>
+    <p><strong>Episodes:</strong> {{ anime.episodes }}</p>
+</div>
+{% endif %}
+
+{% if recommendations %}
+<h2 class="recommend-title">Recommended Anime</h2>
+<div class="recommend-grid">
+{% for rec in recommendations %}
+    <div class="anime-card clickable-card"
+         data-title="{{ rec.title }}">
+        <img src="{{ rec.image_url }}" class="anime-img">
+        <h3>{{ rec.title }}</h3>
+        <p>{{ rec.genres }}</p>
+        <p>⭐ {{ rec.score }}</p>
+    </div>
+{% endfor %}
+</div>
+{% endif %}
+
+</div>
+</div>
+
+<!-- LOGIN MODAL -->
 <div id="loginModal" class="modal hidden">
     <div class="modal-content">
         <span class="close" onclick="closeLogin()">&times;</span>
         <h2>Login</h2>
-        <form method="POST" action="/login">
+        <form method="POST" action="{{ url_for('auth.login') }}">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
+            <a href="#" onclick="openForgot()">Forgot Password?</a>
             <button type="submit" class="search-btn">Login</button>
         </form>
     </div>
 </div>
 
-<!-- ================= REGISTER MODAL ================= -->
+<!-- REGISTER MODAL -->
 <div id="registerModal" class="modal hidden">
     <div class="modal-content">
         <span class="close" onclick="closeRegister()">&times;</span>
         <h2>Register</h2>
-        <form method="POST" action="/register">
+        <form method="POST" action="{{ url_for('auth.register') }}">
             <input type="text" name="username" placeholder="Username" required>
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
@@ -139,7 +138,6 @@
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='script.js', v=range(1, 1000)|random) }}"></script>
-
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

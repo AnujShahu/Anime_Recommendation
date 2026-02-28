@@ -85,3 +85,20 @@ class UserService:
         conn.close()
 
         return user
+@staticmethod
+def get_user_by_email(email):
+    conn = sqlite3.connect(USER_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE email=?", (email,))
+    user = cursor.fetchone()
+    conn.close()
+    return user
+
+@staticmethod
+def update_password(email, new_password):
+    hashed = generate_password_hash(new_password)
+    conn = sqlite3.connect(USER_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET password=? WHERE email=?", (hashed, email))
+    conn.commit()
+    conn.close()
