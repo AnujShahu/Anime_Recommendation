@@ -170,3 +170,17 @@ def admin_dashboard():
         total_admins=total_admins,
         recent_users=recent_users
     )
+@main.route("/users")
+@login_required
+def view_users():
+
+    if current_user.role not in ["admin", "superadmin"]:
+        return "Access Denied", 403
+
+    conn = sqlite3.connect(os.path.join(os.path.dirname(os.path.dirname(__file__)), "user_info.db"))
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, username, email, role FROM users")
+    users = cursor.fetchall()
+    conn.close()
+
+    return render_template("users.html", users=users)

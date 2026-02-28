@@ -21,11 +21,14 @@ def register():
     email = request.form.get("email")
     password = request.form.get("password")
 
-    success, message = UserService.create_user(username, email, password)
+  success, message = UserService.create_user(username, email, password)
+
+if success:
+    flash("Account created successfully! Please login now.")
+else:
     flash(message)
 
-    # Always redirect back to home (modal system)
-    return redirect(url_for("main.home"))
+return redirect(url_for("main.home"))
 
 
 @auth.route("/login", methods=["POST"])

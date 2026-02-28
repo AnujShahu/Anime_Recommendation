@@ -3,7 +3,7 @@ import sqlite3
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-db_path = os.path.join(BASE_DIR, "anime.db")
+USER_DB_PATH = os.path.join(BASE_DIR, "user_info.db")
 
 
 class User(UserMixin):
@@ -12,13 +12,11 @@ class User(UserMixin):
         self.username = username
         self.email = email
         self.password = password
-        self.role = role  # NEW: role support
+        self.role = role
 
-
-    # ================= GET USER BY ID =================
     @staticmethod
     def get(user_id):
-        conn = sqlite3.connect(db_path)
+        conn = sqlite3.connect(USER_DB_PATH)
         cursor = conn.cursor()
         cursor.execute(
             "SELECT id, username, email, password, role FROM users WHERE id=?",
@@ -31,61 +29,9 @@ class User(UserMixin):
             return User(*user)
         return None
 
-
-    # ================= GET USER BY USERNAME =================
-    @staticmethod
-    def get_by_username(username):
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT id, username, email, password, role FROM users WHERE username=?",
-            (username,)
-        )
-        user = cursor.fetchone()
-        conn.close()
-
-        if user:
-            return User(*user)
-        return None
-
-
-    # ================= COUNT USERS =================
-    @staticmethod
-    def count_users():
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM users")
-        count = cursor.fetchone()[0]
-        conn.close()
-        return count
-
-
-    # ================= GET ALL USERS =================
-    @staticmethod
-    def get_all_users():
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, username, email, password, role FROM users")
-        users = cursor.fetchall()
-        conn.close()
-
-        return [User(*user) for user in users]
-
-
-    # ================= PROMOTE TO ADMIN =================
-    @staticmethod
-    def promote_to_admin(user_id):
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute(
-            "UPDATE users SET role='admin' WHERE id=?",
-            (user_id,)
-        )
-        conn.commit()
-        conn.close()
     @staticmethod
     def count_all():
-        conn = sqlite3.connect(db_path)
+        conn = sqlite3.connect(USER_DB_PATH)
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM users")
         count = cursor.fetchone()[0]
@@ -94,18 +40,21 @@ class User(UserMixin):
 
     @staticmethod
     def count_admins():
-        conn = sqlite3.connect(db_path)
+        conn = sqlite3.connect(USER_DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM users WHERE is_admin=1")
+        cursor.execute("SELECT COUNT(*) FROM users WHERE role IN ('admin','superadmin')")
         count = cursor.fetchone()[0]
         conn.close()
         return count
 
     @staticmethod
     def get_recent_users(limit=5):
-        conn = sqlite3.connect(db_path)
+        conn = sqlite3.connect(USER_DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("SELECT id, username, email, password, is_admin FROM users ORDER BY id DESC LIMIT ?", (limit,))
+        cursor.execute(
+            "SELECT id, username, email, password, role FROM users ORDER BY id DESC LIMIT ?",
+            (limit,)
+        )
         users = cursor.fetchall()
         conn.close()
         return users
