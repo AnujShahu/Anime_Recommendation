@@ -7,29 +7,29 @@
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    background: linear-gradient(-45deg, #141e30, #243b55, #000000);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
     color: white;
     transition: all 0.4s ease;
     overflow-x: hidden;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1300px;
     margin: auto;
     padding: 60px 20px;
     text-align: center;
     position: relative;
-    width: 90%;
 }
+
+/* ================= TITLE ================= */
 
 .title {
     font-size: 3rem;
     margin-bottom: 30px;
     letter-spacing: 1px;
-    background: linear-gradient(45deg,#ff4757,#6a11cb,#2575fc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: fadeDown 1s ease, glowTitle 3s infinite alternate;
+    animation: fadeDown 1s ease;
 }
 
 /* ================= THEME BUTTON ================= */
@@ -59,16 +59,13 @@ body {
     display: flex;
     justify-content: center;
     margin-bottom: 35px;
-    flex-wrap: wrap;
 }
 
 .tab {
     padding: 12px 30px;
-    margin: 8px;
-    border: none;
+    margin: 0 12px;
     border-radius: 40px;
     cursor: pointer;
-    font-weight: 600;
     background: rgba(255,255,255,0.08);
     color: white;
     transition: all 0.3s ease;
@@ -88,7 +85,6 @@ body {
 .search-wrapper {
     position: relative;
     width: 60%;
-    max-width: 600px;
     margin: 0 auto 20px auto;
 }
 
@@ -97,7 +93,6 @@ body {
     padding: 15px;
     border-radius: 40px;
     border: none;
-    outline: none;
     font-size: 16px;
     transition: 0.3s;
 }
@@ -113,18 +108,18 @@ body {
     border: none;
     background: linear-gradient(45deg,#ff4757,#ff6b81);
     color: white;
-    font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
 }
 
 .search-btn:hover {
-    transform: scale(1.05);
+    transform: scale(1.1);
     box-shadow: 0 0 20px rgba(255,71,87,0.6);
 }
 
-/* ================= GENRE BUTTONS ================= */
+/* ================= GENRE GRID ================= */
 
+.genre-container,
 .genre-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -137,14 +132,13 @@ body {
     border-radius: 30px;
     border: none;
     cursor: pointer;
-    font-weight: 500;
     background: rgba(255,255,255,0.1);
     color: white;
     transition: all 0.3s ease;
 }
 
 .genre-btn:hover {
-    background: linear-gradient(45deg,#ff00cc,#3333ff);
+    background: linear-gradient(45deg,#6a11cb,#2575fc);
     transform: translateY(-4px);
     box-shadow: 0 0 15px rgba(37,117,252,0.6);
 }
@@ -175,7 +169,7 @@ body {
 
 .anime-card:hover {
     transform: translateY(-10px) scale(1.03);
-    box-shadow: 0 0 40px rgba(106,17,203,0.6);
+    box-shadow: 0 0 30px rgba(255,71,87,0.5);
 }
 
 .anime-img {
@@ -183,120 +177,9 @@ body {
     height: 350px;
     object-fit: cover;
     border-radius: 15px;
-    transition: 0.3s;
 }
 
-.anime-card:hover .anime-img {
-    transform: scale(1.05);
-}
-
-/* ================= AUTOCOMPLETE ================= */
-
-.suggestions-box {
-    position: absolute;
-    width: 100%;
-    background: #1c1c1c;
-    border-radius: 15px;
-    max-height: 220px;
-    overflow-y: auto;
-    margin-top: 8px;
-    text-align: left;
-    z-index: 1000;
-    animation: fadeUp 0.3s ease;
-}
-
-.suggestion-item {
-    padding: 12px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.suggestion-item:hover,
-.active-suggestion {
-    background: linear-gradient(45deg,#ff4757,#ff6b81);
-    color: white;
-}
-
-/* ================= LOADER ================= */
-
-.loader {
-    border: 6px solid rgba(255,255,255,0.2);
-    border-top: 6px solid #ff4757;
-    border-radius: 50%;
-    width: 45px;
-    height: 45px;
-    margin: 20px auto;
-    animation: spin 1s linear infinite;
-}
-
-.hidden {
-    display: none;
-}
-
-/* ================= MODAL ================= */
-
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(8px);
-    z-index: 2000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-.modal:not(.hidden) {
-    opacity: 1;
-    visibility: visible;
-}
-
-.modal-content {
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(20px);
-    padding: 40px 35px;
-    border-radius: 25px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    position: relative;
-    animation: popUp 0.4s ease;
-    box-shadow: 0 0 40px rgba(255,71,87,0.4);
-}
-
-.modal-content input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 12px;
-    border: none;
-    outline: none;
-    font-size: 14px;
-}
-
-.modal-content input:focus {
-    box-shadow: 0 0 15px #ff4757;
-    transform: scale(1.03);
-}
-
-.close {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 22px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.close:hover {
-    color: #ff4757;
-    transform: rotate(90deg);
-}
-
-/* ================= USER DROPDOWN ================= */
+/* ================= DROPDOWN ================= */
 
 .user-menu {
     position: absolute;
@@ -316,7 +199,7 @@ body {
 
 .settings-icon:hover {
     background: linear-gradient(45deg,#ff4757,#6a11cb);
-    transform: rotate(25deg);
+    transform: rotate(20deg);
 }
 
 .dropdown {
@@ -326,8 +209,6 @@ body {
     background: rgba(0,0,0,0.85);
     border-radius: 15px;
     width: 200px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    overflow: hidden;
 }
 
 .dropdown-item {
@@ -341,20 +222,26 @@ body {
     background: linear-gradient(45deg,#ff4757,#6a11cb);
 }
 
-.dropdown-item a {
-    color: white;
-    text-decoration: none;
+/* ================= MODAL ================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    z-index: 2000;
 }
 
-/* ================= LIGHT MODE ================= */
-
-body.light-mode {
-    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-    color: #111;
-}
-
-body.light-mode .anime-card {
-    background: rgba(0,0,0,0.05);
+.modal-content {
+    background: rgba(255,255,255,0.08);
+    padding: 40px;
+    border-radius: 25px;
+    width: 90%;
+    max-width: 400px;
+    animation: popUp 0.4s ease;
 }
 
 /* ================= ANIMATIONS ================= */
@@ -369,151 +256,9 @@ body.light-mode .anime-card {
     to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes spin {
-    100% { transform: rotate(360deg); }
-}
-
 @keyframes popUp {
     from { opacity: 0; transform: scale(0.8) translateY(40px); }
     to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-@keyframes glowTitle {
-    from { text-shadow: 0 0 10px rgba(255,71,87,0.6); }
-    to { text-shadow: 0 0 25px rgba(106,17,203,0.8); }
-}
-
-/* ================= RESPONSIVE ================= */
-
-@media (max-width: 992px) {
-    .search-wrapper {
-        width: 80%;
-    }
-}
-
-@media (max-width: 768px) {
-
-    .title {
-        font-size: 2rem;
-    }
-
-    .tabs {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .search-wrapper {
-        width: 100%;
-    }
-
-    .search-btn {
-        width: 100%;
-        margin-top: 10px;
-    }
-
-    .anime-img {
-        height: 250px;
-    }
-
-    .theme-toggle {
-        top: 15px;
-        right: 15px;
-        padding: 8px 18px;
-    }
-
-    .user-menu {
-        top: 15px;
-        left: 15px;
-    }
-}
-/* SECTION */
-.genre-section {
-    text-align: center;
-    margin-top: 50px;
-}
-
-.genre-title {
-    font-size: 32px;
-    color: #fff;
-    margin-bottom: 30px;
-    position: relative;
-}
-
-/* UNDERLINE ANIMATION */
-.genre-title::after {
-    content: "";
-    width: 0%;
-    height: 3px;
-    background: linear-gradient(90deg, #ff416c, #ff4b2b);
-    display: block;
-    margin: 10px auto 0;
-    transition: 0.4s ease;
-}
-
-.genre-title:hover::after {
-    width: 50%;
-}
-
-/* CONTAINER */
-.genre-container {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-/* GENRE CARD */
-.genre-card {
-    padding: 15px 30px;
-    border-radius: 12px;
-    text-decoration: none;
-    color: white;
-    font-weight: 600;
-    font-size: 18px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 2px solid transparent;
-    transition: all 0.4s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-/* GRADIENT BORDER EFFECT */
-.genre-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 12px;
-    padding: 2px;
-    background: linear-gradient(45deg, #ff416c, #ff4b2b, #1e90ff);
-    -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: 0.4s;
-}
-
-.genre-card:hover::before {
-    opacity: 1;
-}
-
-/* HOVER ANIMATION */
-.genre-card:hover {
-    transform: translateY(-8px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(255, 75, 43, 0.5);
-    color: #fff;
-}
-
-/* CLICK EFFECT */
-.genre-card:active {
-    transform: scale(0.95);
-}
-body {
-    background: linear-gradient(-45deg, #141e30, #243b55, #000000);
-    background-size: 400% 400%;
-    animation: gradientBG 10s ease infinite;
 }
 
 @keyframes gradientBG {
