@@ -20,15 +20,6 @@ def init_user_db():
     )
     """)
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS favorites (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        anime_title TEXT NOT NULL,
-        FOREIGN KEY(user_id) REFERENCES users(id)
-    )
-    """)
-
     conn.commit()
     conn.close()
 
@@ -55,50 +46,37 @@ class UserService:
             conn.close()
 
     @staticmethod
-    def authenticate_user(email, password):
+    def get_user_by_email(email):
         conn = sqlite3.connect(USER_DB_PATH)
         cursor = conn.cursor()
-
         cursor.execute(
             "SELECT id, username, email, password, role FROM users WHERE email=?",
             (email,)
         )
-
         user = cursor.fetchone()
         conn.close()
-
-        if user and check_password_hash(user[3], password):
-            return user
-        return None
+        return user
 
     @staticmethod
     def get_user_by_id(user_id):
         conn = sqlite3.connect(USER_DB_PATH)
         cursor = conn.cursor()
-
         cursor.execute(
             "SELECT id, username, email, password, role FROM users WHERE id=?",
             (user_id,)
         )
-
         user = cursor.fetchone()
         conn.close()
-
         return user
-@staticmethod
-def get_user_by_email(email):
-    conn = sqlite3.connect(USER_DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE email=?", (email,))
-    user = cursor.fetchone()
-    conn.close()
-    return user
 
-@staticmethod
-def update_password(email, new_password):
-    hashed = generate_password_hash(new_password)
-    conn = sqlite3.connect(USER_DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("UPDATE users SET password=? WHERE email=?", (hashed, email))
-    conn.commit()
-    conn.close()
+    @staticmethod
+    def update_password(email, new_password):
+        hashed = generate_password_hash(new_password)
+        conn = sqlite3.connect(USER_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE users SET password=? WHERE email=?",
+            (hashed, email)
+        )
+        conn.commit()
+        conn.close()
