@@ -197,6 +197,65 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
+ /* ================= KEYBOARD NAVIGATION ================= */
+    searchInput.addEventListener("keydown", function (e) {
+
+        const items = suggestionsBox.getElementsByClassName("suggestion-item");
+        if (!items.length) return;
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            currentFocus++;
+            addActive(items);
+        }
+
+        else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            currentFocus--;
+            addActive(items);
+        }
+
+        else if (e.key === "Enter") {
+            if (currentFocus > -1 && items[currentFocus]) {
+                e.preventDefault();
+                items[currentFocus].click();
+            }
+        }
+
+        else if (e.key === "PageDown") {
+            e.preventDefault();
+            suggestionsBox.scrollTop += suggestionsBox.clientHeight;
+        }
+
+        else if (e.key === "PageUp") {
+            e.preventDefault();
+            suggestionsBox.scrollTop -= suggestionsBox.clientHeight;
+        }
+
+        else if (e.key === "Escape") {
+            suggestionsBox.innerHTML = "";
+            currentFocus = -1;
+        }
+    });
+
+    function addActive(items) {
+        removeActive(items);
+
+        if (currentFocus >= items.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = items.length - 1;
+
+        items[currentFocus].classList.add("active-suggestion");
+        items[currentFocus].scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
+    function removeActive(items) {
+        for (let item of items) {
+            item.classList.remove("active-suggestion");
+        }
+    }
+
+
+
 
     /* ================= CARD REDIRECT ================= */
     document.addEventListener("click", function (e) {
