@@ -46,9 +46,10 @@ class User(UserMixin):
         count = cursor.fetchone()[0]
         conn.close()
         return count
-   @property
-def is_admin(self):
-    return self.role in ["admin", "superadmin"]
+
+    @property
+    def is_admin(self):
+        return self.role in ["admin", "superadmin"]
 
     @staticmethod
     def get_recent_users(limit=5):
