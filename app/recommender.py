@@ -1,19 +1,22 @@
 import pandas as pd
-from .database import get_connection   # adjust if your file name is different
+from .database import get_connection   # keep your existing connection logic
 
 
+# ===============================
+# RECOMMENDATION FUNCTION
+# ===============================
 def get_recommendations(anime_name):
     conn = get_connection()
     df = pd.read_sql_query("SELECT * FROM anime", conn)
 
     df["title"] = df["title"].astype(str).str.strip()
-    anime_name = anime_name.strip().lower()
+    anime_name_clean = anime_name.strip().lower()
 
-    if not anime_name:
+    if not anime_name_clean:
         conn.close()
         return None, None
 
-    match = df[df["title"].str.lower().str.contains(anime_name, na=False)]
+    match = df[df["title"].str.lower().str.contains(anime_name_clean, na=False)]
 
     if match.empty:
         conn.close()
@@ -36,9 +39,35 @@ def get_recommendations(anime_name):
     recommendations = df[df["genres"].apply(has_common_genre)]
 
     recommendations = recommendations[
-        recommendations["title"].str.lower() != anime_name
+        recommendations["title"].str.lower() != anime_name_clean
     ].head(5)
 
     conn.close()
 
     return anime_row, recommendations
+
+
+# ===============================
+# BROWSE BY GENRE FUNCTION
+# ===============================
+def get_anime_by_genre(genre):
+    conn = get_connection()
+    df = pd.read_sql_query("SELECT * FROM anime", conn)
+
+    genre = genre.strip().lower()
+
+    if not genre:
+        conn.close()
+        return []
+
+    def genre_match(g):
+        if not g:
+            return False
+        return genre in g.lower()
+
+    filtered = df[df["genres"].apply(genre_match)]
+
+    conn.close()
+
+    # Return as list of dictionaries (safe for template rendering)
+    return filtered.to_dict(orient="records")
