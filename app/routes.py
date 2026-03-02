@@ -74,6 +74,11 @@ def get_genres():
 def search_by_genres():
     data = request.get_json()
     selected_genres = data.get("genres", [])
+    page = data.get("page", 1)
+    per_page = 20
+
+    if not selected_genres:
+        return jsonify([])
 
     conn = sqlite3.connect(ANIME_DB_PATH)
     cursor = conn.cursor()
@@ -83,13 +88,15 @@ def search_by_genres():
 
     results = []
 
+    selected_genres = [g.lower() for g in selected_genres]
+
     for row in rows:
         title, genres, image_url, score = row
 
         if not genres:
             continue
 
-        anime_genres = [g.strip() for g in genres.split(",")]
+        anime_genres = [g.strip().lower() for g in genres.split(",")]
 
         if all(g in anime_genres for g in selected_genres):
             results.append({
@@ -99,7 +106,12 @@ def search_by_genres():
                 "score": score
             })
 
-    return jsonify(results)
+    # 🔥 ADD PAGINATION
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_results = results[start:end]
+
+    return jsonify(paginated_results)
 
 
 # ================= ADMIN DASHBOARD =================
