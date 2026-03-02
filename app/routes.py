@@ -32,10 +32,10 @@ def recommend():
         return redirect(url_for("main.home"))
 
     return render_template(
-        "index.html",
-        anime=anime,
-        recommendations=recommendations.to_dict(orient="records")
-    )
+    "index.html",
+    anime=anime.to_dict() if anime is not None else None,
+    recommendations=recommendations.to_dict(orient="records") if recommendations is not None else []
+)
 
 
 # ================= GET TITLES (FOR AUTOCOMPLETE) =================
