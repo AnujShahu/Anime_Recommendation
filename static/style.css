@@ -93,6 +93,7 @@ body {
     padding: 15px;
     border-radius: 40px;
     border: none;
+    outline: none;
     font-size: 16px;
     transition: 0.3s;
 }
@@ -177,6 +178,8 @@ body {
     height: 350px;
     object-fit: cover;
     border-radius: 15px;
+    transition: 0.3s;
+
 }
 
 /* ================= DROPDOWN ================= */
@@ -221,6 +224,50 @@ body {
 .dropdown-item:hover {
     background: linear-gradient(45deg,#ff4757,#6a11cb);
 }
+/* ================= LOADER ================= */
+
+.loader {
+    border: 6px solid rgba(255,255,255,0.2);
+    border-top: 6px solid #ff4757;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    margin: 20px auto;
+    animation: spin 1s linear infinite;
+}
+
+.hidden {
+    display: none;
+}
+
+/* ================= AUTOCOMPLETE ================= */
+
+.suggestions-box {
+    position: absolute;
+    width: 100%;
+    background: #1c1c1c;
+    border-radius: 15px;
+    max-height: 220px;
+    overflow-y: auto;
+    margin-top: 8px;
+    text-align: left;
+    z-index: 1000;
+    animation: fadeUp 0.3s ease;
+}
+
+.suggestion-item {
+    padding: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.suggestion-item:hover,
+.active-suggestion {
+    background: linear-gradient(45deg,#ff4757,#ff6b81);
+    color: white;
+}
+
+
 
 /* ================= MODAL ================= */
 
@@ -266,6 +313,11 @@ body {
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+@keyframes glowTitle {
+    from { text-shadow: 0 0 10px rgba(255,71,87,0.6); }
+    to { text-shadow: 0 0 25px rgba(106,17,203,0.8); }
+}
+
 .hidden {
     display: none !important;
 }

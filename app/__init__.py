@@ -36,7 +36,7 @@ def create_app():
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s"
     )
-
+   
     # ================= INIT USER DATABASE =================
     # This will create user_info.db automatically if it doesn't exist
     from .user_service import init_user_db
