@@ -53,6 +53,25 @@ body {
     box-shadow: 0 0 20px rgba(255,71,87,0.6);
 }
 
+body.light-mode {
+    background: linear-gradient(-45deg, #f5f7fa, #c3cfe2);
+    color: #111;
+}
+
+body.light-mode .anime-card {
+    background: rgba(0,0,0,0.05);
+    color: #111;
+}
+
+body.light-mode .tab {
+    background: rgba(0,0,0,0.1);
+    color: #111;
+}
+
+body.light-mode .suggestions-box {
+    background: #ffffff;
+    color: #111;
+}
 /* ================= TABS ================= */
 
 .tabs {
