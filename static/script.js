@@ -299,5 +299,10 @@ document.addEventListener("DOMContentLoaded", function () {
             userDropdown.classList.add("hidden");
         });
     }
+const rankingTab = document.getElementById("rankingTab");
+const rankingSection = document.getElementById("rankingSection");
 
+rankingTab.addEventListener("click", () => {
+    window.location.href = "/rankings";
+});
 });

@@ -154,6 +154,70 @@
     </div>
 </div>
 
+<!-- ================= RANKING SECTION ================= -->
+<div id="rankingSection" class="hidden">
+
+<h2 class="recommend-title">🔥 Top Ranked Anime</h2>
+<button id="rankingTab" class="tab">Top Rankings</button>
+<div class="recommend-grid">
+{% if rankings %}
+    {% for anime in rankings %}
+        <div class="anime-card ranking-card">
+            <img src="{{ anime.image_url }}" class="anime-img">
+            <h3>{{ anime.title }}</h3>
+            <p>⭐ {{ anime.score }}</p>
+
+            {% if current_user.is_authenticated %}
+            <form method="POST" action="{{ url_for('main.add_favorite') }}">
+                <input type="hidden" name="title" value="{{ anime.title }}">
+                <input type="hidden" name="image" value="{{ anime.image_url }}">
+                <input type="hidden" name="score" value="{{ anime.score }}">
+                <button class="fav-btn">❤️ Add to Favorites</button>
+            </form>
+            {% endif %}
+
+        </div>
+    {% endfor %}
+{% endif %}
+</div>
+
+{% if page and total_pages %}
+<div class="pagination">
+    {% if page > 1 %}
+        <a href="{{ url_for('main.rankings', page=page-1) }}">⬅ Prev</a>
+    {% endif %}
+
+    <span>Page {{ page }}</span>
+
+    {% if page < total_pages %}
+        <a href="{{ url_for('main.rankings', page=page+1) }}">Next ➡</a>
+    {% endif %}
+</div>
+{% endif %}
+
+</div>
+
+<!-- ================= ⭐  Favorites ================= -->
+
+{% if current_user.is_authenticated %}
+<div id="favoritesSection">
+
+<h2 class="recommend-title">❤️ My Favorites</h2>
+
+<div class="recommend-grid">
+{% if favorites %}
+    {% for fav in favorites %}
+        <div class="anime-card">
+            <img src="{{ fav.image_url }}" class="anime-img">
+            <h3>{{ fav.anime_title }}</h3>
+            <p>⭐ {{ fav.score }}</p>
+        </div>
+    {% endfor %}
+{% endif %}
+</div>
+
+</div>
+{% endif %}
 
 <!-- ================= REGISTER MODAL ================= -->
 <div id="registerModal" class="modal hidden">

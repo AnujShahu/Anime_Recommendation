@@ -1,6 +1,7 @@
 from flask_login import UserMixin
 import sqlite3
 import os
+from app.database import db
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 USER_DB_PATH = os.path.join(BASE_DIR, "user_info.db")
@@ -62,3 +63,20 @@ class User(UserMixin):
         users = cursor.fetchall()
         conn.close()
         return users
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    role = db.Column(db.String(50), default="user")
+
+    favorites = db.relationship('Favorite', backref='user', lazy=True)
+
+
+class Favorite(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    anime_title = db.Column(db.String(255))
+    image_url = db.Column(db.String(500))
+    score = db.Column(db.Float)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

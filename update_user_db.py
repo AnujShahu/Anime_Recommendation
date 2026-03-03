@@ -15,3 +15,17 @@ except Exception as e:
 
 conn.commit()
 conn.close()
+
+conn = sqlite3.connect("user_info.db")
+cursor = conn.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS favorites (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    anime_id INTEGER
+)
+""")
+
+conn.commit()
+conn.close()

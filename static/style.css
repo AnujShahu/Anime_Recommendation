@@ -344,3 +344,39 @@ body.light-mode .suggestions-box {
 .hidden {
     display: none !important;
 }
+.ranking-card {
+    animation: popUp 0.6s ease;
+}
+
+.fav-btn {
+    margin-top: 10px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    background: linear-gradient(45deg,#ff4757,#ff6b81);
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.fav-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255,71,87,0.6);
+}
+
+.pagination {
+    margin-top: 30px;
+}
+
+.pagination a {
+    margin: 0 15px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.pagination a:hover {
+    color: #ff6b81;
+    transform: scale(1.1);
+}
