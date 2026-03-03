@@ -32,11 +32,16 @@ def create_app():
     login_manager.login_view = "auth.login"
 
     # ================= LOGGING =================
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s"
+if not app.debug:
+    file_handler = logging.FileHandler("error.log")
+    file_handler.setLevel(logging.INFO)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(message)s"
     )
-   
+    file_handler.setFormatter(formatter)
+    app.logger.addHandler(file_handler)
+
+
     # ================= INIT USER DATABASE =================
     # This will create user_info.db automatically if it doesn't exist
     from .user_service import init_user_db
