@@ -187,38 +187,8 @@ def add_favorite(anime_id):
     return redirect(request.referrer)
 
 
-@main.route("/add-favorite/<int:anime_id>")
-@login_required
-def add_favorite(anime_id):
-    conn = sqlite3.connect("user_info.db")
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        INSERT INTO favorites (user_id, anime_id)
-        VALUES (?, ?)
-    """, (current_user.id, anime_id))
-
-    conn.commit()
-    conn.close()
-
-    return redirect(request.referrer)
 
 
-@main.route("/add-favorite/<int:anime_id>")
-@login_required
-def add_favorite(anime_id):
-    conn = sqlite3.connect("user_info.db")
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        INSERT INTO favorites (user_id, anime_id)
-        VALUES (?, ?)
-    """, (current_user.id, anime_id))
-
-    conn.commit()
-    conn.close()
-
-    return redirect(request.referrer)
 
 # =================favourites =================
 
@@ -249,3 +219,7 @@ def favorites():
     conn2.close()
 
     return render_template("index.html", favorite_list=favorite_list)
+@main.route("/rankings")
+def rankings():
+    print("Ranking route hit")
+    return "Working"

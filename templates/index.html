@@ -160,7 +160,7 @@
 <h2 class="recommend-title">🔥 Top Ranked Anime</h2>
 <button id="rankingTab" class="tab">Top Rankings</button>
 <div class="recommend-grid">
-{% if rankings %}
+{% if rankings is defined and rankings %}
     {% for anime in rankings %}
         <div class="anime-card ranking-card">
             <img src="{{ anime.image_url }}" class="anime-img">
@@ -205,7 +205,7 @@
 <h2 class="recommend-title">❤️ My Favorites</h2>
 
 <div class="recommend-grid">
-{% if favorites %}
+{% if favorites is defined and favorites %}}
     {% for fav in favorites %}
         <div class="anime-card">
             <img src="{{ fav.image_url }}" class="anime-img">
