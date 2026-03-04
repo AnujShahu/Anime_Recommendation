@@ -5,6 +5,7 @@ import sqlite3
 import os
 from app.models import Favorite
 import random
+import math
 
 main = Blueprint("main", __name__)
 
@@ -138,47 +139,6 @@ def admin_dashboard():
 
 
 # ================= top ranking =================
-@main.route("/top-rankings")
-@login_required
-def top_rankings():
-    page = request.args.get("page", 1, type=int)
-    genre = request.args.get("genre")
-    per_page = 10
-    offset = (page - 1) * per_page
-
-    conn = sqlite3.connect(os.path.join(PROJECT_ROOT, "anime.db"))
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-
-    if genre:
-        cursor.execute("""
-            SELECT * FROM anime
-            WHERE genres LIKE ? AND score IS NOT NULL
-            ORDER BY score DESC
-            LIMIT ? OFFSET ?
-        """, (f"%{genre}%", per_page, offset))
-    else:
-        cursor.execute("""
-            SELECT * FROM anime
-            WHERE score IS NOT NULL
-            ORDER BY score DESC
-            LIMIT ? OFFSET ?
-        """, (per_page, offset))
-
-    rankings = cursor.fetchall()
-
-    cursor.execute("SELECT COUNT(*) FROM anime WHERE score IS NOT NULL")
-    total = cursor.fetchone()[0]
-    conn.close()
-
-    total_pages = (total // per_page) + 1
-
-    return render_template(
-        "index.html",
-        rankings=rankings,
-        page=page,
-        total_pages=total_pages
-    )
 
 # =================favourites =================
 
@@ -193,7 +153,7 @@ def favorites():
     conn.close()
 
     if not anime_ids:
-        return render_template("index.html", favorite_list=[])
+        return render_template("index.html", favorites=[])
 
     conn2 = sqlite3.connect(os.path.join(PROJECT_ROOT, "anime.db"))
     conn2.row_factory = sqlite3.Row
@@ -208,11 +168,8 @@ def favorites():
     favorite_list = cursor2.fetchall()
     conn2.close()
 
-    return render_template("index.html", favorite_list=favorite_list)
-@main.route("/rankings")
-def rankings():
-    print("Ranking route hit")
-    return "Working"
+    return render_template("index.html", favorites=favorite_list)
+"
 
 # ================= WATCHLIST =================
 @main.route("/watchlist")
@@ -242,3 +199,90 @@ def watchlist():
     conn2.close()
 
     return render_template("index.html", watchlist=watchlist)
+
+# ================= ADD FAVORITE =================
+@main.route("/add_favorite/<int:anime_id>")
+@login_required
+def add_favorite(anime_id):
+
+    conn = sqlite3.connect(os.path.join(PROJECT_ROOT, "user_info.db"))
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT INTO favorites (user_id, anime_id) VALUES (?, ?)",
+        (current_user.id, anime_id)
+    )
+
+    conn.commit()
+    conn.close()
+
+    flash("Added to Favorites ❤️")
+    return redirect(request.referrer or url_for("main.home"))
+
+# =================  top rankings =================
+@main.route("/top-rankings")
+@login_required
+def top_rankings():
+    page = request.args.get("page", 1, type=int)
+    genre = request.args.get("genre")
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    conn = sqlite3.connect(os.path.join(PROJECT_ROOT, "anime.db"))
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    if genre:
+        cursor.execute("""
+            SELECT * FROM anime
+            WHERE genres LIKE ? AND score IS NOT NULL
+            ORDER BY score DESC
+            LIMIT ? OFFSET ?
+        """, (f"%{genre}%", per_page, offset))
+    else:
+        cursor.execute("""
+            SELECT * FROM anime
+            WHERE score IS NOT NULL
+            ORDER BY score DESC
+            LIMIT ? OFFSET ?
+        """, (per_page, offset))
+
+    rankings = cursor.fetchall()
+
+
+
+
+
+    cursor.execute("SELECT COUNT(*) FROM anime WHERE score IS NOT NULL")
+    total = cursor.fetchone()[0]
+    conn.close()
+
+   
+    total_pages = math.ceil(total / per_page)
+
+    return render_template(
+        "index.html",
+        rankings=rankings,
+        page=page,
+        total_pages=total_pages
+    )
+
+
+# ================= ADD WATCHLIST =================
+@main.route("/add_watchlist/<int:anime_id>")
+@login_required
+def add_watchlist(anime_id):
+
+    conn = sqlite3.connect(os.path.join(PROJECT_ROOT, "user_info.db"))
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT INTO watchlist (user_id, anime_id) VALUES (?, ?)",
+        (current_user.id, anime_id)
+    )
+
+    conn.commit()
+    conn.close()
+
+    flash("Added to Watchlist 💗")
+    return redirect(request.referrer or url_for("main.home"))
