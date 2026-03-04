@@ -12,35 +12,36 @@
 
 <!-- FLASH MESSAGES -->
 {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <div class="flash-container">
-      {% for message in messages %}
-        <div class="flash-message">
-          {{ message }}
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
+{% if messages %}
+<div class="flash-container">
+    {% for message in messages %}
+    <div class="flash-message">{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
 {% endwith %}
 
 <!-- USER MENU -->
 <div class="user-menu">
     <div class="settings-icon" id="userMenuBtn">
-        {% if current_user.is_authenticated %}
-            👤
-        {% else %}
-            ⚙
-        {% endif %}
+        {% if current_user.is_authenticated %} 👤 {% else %} ⚙ {% endif %}
     </div>
 
     <div class="dropdown hidden" id="userDropdown">
         {% if current_user.is_authenticated %}
-            <div class="dropdown-item">
-                👋 {{ current_user.username }}
+            <div class="dropdown-item">👋 {{ current_user.username }}</div>
+            <div class="dropdown-item">Role: {{ current_user.role }}</div>
+
+            <div class="dropdown-item">🏆
+                <a href="{{ url_for('main.top_rankings') }}">Top Rankings</a>
             </div>
 
-            <div class="dropdown-item">
-                Role: {{ current_user.role }}
+            <div class="dropdown-item">💗
+                <a href="{{ url_for('main.watchlist') }}">Watchlist</a>
+            </div>
+
+            <div class="dropdown-item">❤️
+                <a href="{{ url_for('main.favorites') }}">Favorites</a>
             </div>
 
             <div class="dropdown-item">
@@ -68,16 +69,10 @@
 
 <form method="POST" action="{{ url_for('main.recommend') }}" id="searchForm">
     <div class="search-wrapper">
-        <input type="text"
-               id="searchInput"
-               name="anime_name"
-               placeholder="Search Anime..."
-               autocomplete="off"
-               required>
-
+        <input type="text" id="searchInput" name="anime_name"
+               placeholder="Search Anime..." autocomplete="off" required>
         <div id="suggestions" class="suggestions-box"></div>
     </div>
-
     <button type="submit" class="search-btn">Search</button>
 </form>
 
@@ -88,150 +83,147 @@
 {% endif %}
 
 {% if anime %}
-<div class="anime-card main-anime clickable-card"
-     data-title="{{ anime.title }}">
+<div class="anime-card main-anime animate-card">
     <img src="{{ anime.image_url }}" class="anime-img">
     <h2>{{ anime.title }}</h2>
     <p><strong>Genres:</strong> {{ anime.genres }}</p>
     <p><strong>Score:</strong> ⭐ {{ anime.score }}</p>
     <p><strong>Episodes:</strong> {{ anime.episodes }}</p>
+
+    {% if current_user.is_authenticated %}
+    <div class="card-actions">
+        <a href="{{ url_for('main.add_favorite', anime_id=anime.anime_id) }}" class="heart-btn">❤️</a>
+        <a href="{{ url_for('main.add_watchlist', anime_id=anime.anime_id) }}" class="watch-btn">💗</a>
+    </div>
+    {% endif %}
 </div>
 {% endif %}
 
 {% if recommendations %}
 <h2 class="recommend-title">Recommended Anime</h2>
-
 <div class="recommend-grid">
 {% for rec in recommendations %}
-    <div class="anime-card clickable-card"
-         data-title="{{ rec.title }}">
-        <img src="{{ rec.image_url }}" class="anime-img">
-        <h3>{{ rec.title }}</h3>
-        <p>{{ rec.genres }}</p>
-        <p>⭐ {{ rec.score }}</p>
+<div class="anime-card animate-card">
+    <img src="{{ rec.image_url }}" class="anime-img">
+    <h3>{{ rec.title }}</h3>
+    <p>{{ rec.genres }}</p>
+    <p>⭐ {{ rec.score }}</p>
+
+    {% if current_user.is_authenticated %}
+    <div class="card-actions">
+        <a href="{{ url_for('main.add_favorite', anime_id=rec.anime_id) }}" class="heart-btn">❤️</a>
+        <a href="{{ url_for('main.add_watchlist', anime_id=rec.anime_id) }}" class="watch-btn">💗</a>
     </div>
+    {% endif %}
+</div>
 {% endfor %}
 </div>
 {% endif %}
-
 </div>
-<!-- END SEARCH SECTION -->
-
 
 <!-- ================= GENRE SECTION ================= -->
 <div id="genreSection" class="hidden">
-
-    <h2 class="recommend-title">Browse by Genre</h2>
-
-    <!-- Genre buttons load here dynamically -->
-    <div id="genreContainer" class="genre-container"></div>
-
-    <button id="genreSearchBtn" class="search-btn">
-        Search by Selected Genres
-    </button>
-
-    <!-- Results load here -->
-    <div id="genreResults" class="recommend-grid"></div>
-
-</div>
-<!-- END GENRE SECTION -->
-
-</div> <!-- END CONTAINER -->
-
-
-<!-- ================= LOGIN MODAL ================= -->
-<div id="loginModal" class="modal hidden">
-    <div class="modal-content">
-        <span class="close" onclick="closeLogin()">&times;</span>
-        <h2>Login</h2>
-
-        <form method="POST" action="{{ url_for('auth.login') }}">
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <a href="#">Forgot Password?</a>
-            <button type="submit" class="search-btn">Login</button>
-        </form>
-    </div>
+<h2 class="recommend-title">Browse by Genre</h2>
+<div id="genreContainer" class="genre-container"></div>
+<button id="genreSearchBtn" class="search-btn">Search by Selected Genres</button>
+<div id="genreResults" class="recommend-grid"></div>
 </div>
 
-<!-- ================= RANKING SECTION ================= -->
-<div id="rankingSection" class="hidden">
+<!-- ================= RANKINGS ================= -->
+{% if rankings %}
+<div id="rankingSection">
+<h2 class="recommend-title trophy-title">🏆 Top Ranked Anime</h2>
 
-<h2 class="recommend-title">🔥 Top Ranked Anime</h2>
-<button id="rankingTab" class="tab">Top Rankings</button>
 <div class="recommend-grid">
-{% if rankings is defined and rankings %}
-    {% for anime in rankings %}
-        <div class="anime-card ranking-card">
-            <img src="{{ anime.image_url }}" class="anime-img">
-            <h3>{{ anime.title }}</h3>
-            <p>⭐ {{ anime.score }}</p>
+{% for anime in rankings %}
+<div class="anime-card animate-card">
+    <img src="{{ anime.image_url }}" class="anime-img">
+    <h3>{{ anime.title }}</h3>
+    <p>⭐ {{ anime.score }}</p>
 
-            {% if current_user.is_authenticated %}
-            <form method="POST" action="{{ url_for('main.add_favorite') }}">
-                <input type="hidden" name="title" value="{{ anime.title }}">
-                <input type="hidden" name="image" value="{{ anime.image_url }}">
-                <input type="hidden" name="score" value="{{ anime.score }}">
-                <button class="fav-btn">❤️ Add to Favorites</button>
-            </form>
-            {% endif %}
-
-        </div>
-    {% endfor %}
-{% endif %}
+    {% if current_user.is_authenticated %}
+    <div class="card-actions">
+        <a href="{{ url_for('main.add_favorite', anime_id=anime.anime_id) }}" class="heart-btn">❤️</a>
+        <a href="{{ url_for('main.add_watchlist', anime_id=anime.anime_id) }}" class="watch-btn">💗</a>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
 </div>
 
 {% if page and total_pages %}
 <div class="pagination">
     {% if page > 1 %}
-        <a href="{{ url_for('main.rankings', page=page-1) }}">⬅ Prev</a>
+        <a href="{{ url_for('main.top_rankings', page=page-1) }}">⬅ Prev</a>
     {% endif %}
-
     <span>Page {{ page }}</span>
-
     {% if page < total_pages %}
-        <a href="{{ url_for('main.rankings', page=page+1) }}">Next ➡</a>
+        <a href="{{ url_for('main.top_rankings', page=page+1) }}">Next ➡</a>
     {% endif %}
 </div>
 {% endif %}
-
 </div>
+{% endif %}
 
-<!-- ================= ⭐  Favorites ================= -->
-
-{% if current_user.is_authenticated %}
+<!-- ================= FAVORITES ================= -->
+{% if favorites %}
 <div id="favoritesSection">
-
 <h2 class="recommend-title">❤️ My Favorites</h2>
-
 <div class="recommend-grid">
-{% if favorites is defined and favorites %}}
-    {% for fav in favorites %}
-        <div class="anime-card">
-            <img src="{{ fav.image_url }}" class="anime-img">
-            <h3>{{ fav.anime_title }}</h3>
-            <p>⭐ {{ fav.score }}</p>
-        </div>
-    {% endfor %}
-{% endif %}
+{% for fav in favorites %}
+<div class="anime-card animate-card">
+    <img src="{{ fav.image_url }}" class="anime-img">
+    <h3>{{ fav.title }}</h3>
+    <p>⭐ {{ fav.score }}</p>
 </div>
+{% endfor %}
+</div>
+</div>
+{% endif %}
+
+<!-- ================= WATCHLIST ================= -->
+{% if watchlist %}
+<div id="watchlistSection">
+<h2 class="recommend-title">💗 My Watchlist</h2>
+<div class="recommend-grid">
+{% for w in watchlist %}
+<div class="anime-card animate-card">
+    <img src="{{ w.image_url }}" class="anime-img">
+    <h3>{{ w.title }}</h3>
+    <p>⭐ {{ w.score }}</p>
+</div>
+{% endfor %}
+</div>
+</div>
+{% endif %}
 
 </div>
-{% endif %}
+
+<!-- ================= LOGIN MODAL ================= -->
+<div id="loginModal" class="modal hidden">
+<div class="modal-content">
+<span class="close" onclick="closeLogin()">&times;</span>
+<h2>Login</h2>
+<form method="POST" action="{{ url_for('auth.login') }}">
+<input type="email" name="email" placeholder="Email" required>
+<input type="password" name="password" placeholder="Password" required>
+<button type="submit" class="search-btn">Login</button>
+</form>
+</div>
+</div>
 
 <!-- ================= REGISTER MODAL ================= -->
 <div id="registerModal" class="modal hidden">
-    <div class="modal-content">
-        <span class="close" onclick="closeRegister()">&times;</span>
-        <h2>Register</h2>
-
-        <form method="POST" action="{{ url_for('auth.register') }}">
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit" class="search-btn">Register</button>
-        </form>
-    </div>
+<div class="modal-content">
+<span class="close" onclick="closeRegister()">&times;</span>
+<h2>Register</h2>
+<form method="POST" action="{{ url_for('auth.register') }}">
+<input type="text" name="username" placeholder="Username" required>
+<input type="email" name="email" placeholder="Email" required>
+<input type="password" name="password" placeholder="Password" required>
+<button type="submit" class="search-btn">Register</button>
+</form>
+</div>
 </div>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>

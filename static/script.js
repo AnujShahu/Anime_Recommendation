@@ -283,6 +283,16 @@ document.addEventListener("DOMContentLoaded", function () {
     window.openRegister = () => openModal(registerModal);
     window.closeRegister = () => closeModal(registerModal);
 
+ /* ================= LOADER EFFECT TO TOP RANKINGS ================= */
+document.querySelectorAll(".tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+        document.body.insertAdjacentHTML(
+            "beforeend",
+            `<div class="loader"></div>`
+        );
+    });
+});
+
     /* ================= USER DROPDOWN ================= */
     if (userMenuBtn && userDropdown) {
 

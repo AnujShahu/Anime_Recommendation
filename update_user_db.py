@@ -26,6 +26,13 @@ CREATE TABLE IF NOT EXISTS favorites (
     anime_id INTEGER
 )
 """)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS watchlist (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    anime_id INTEGER
+)
+""")
 
 conn.commit()
 conn.close()

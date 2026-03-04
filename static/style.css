@@ -380,3 +380,46 @@ body.light-mode .suggestions-box {
     color: #ff6b81;
     transform: scale(1.1);
 }
+
+body.light-mode .tab,
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3,
+body.light-mode p {
+    color: #111 !important;
+    text-shadow: 0 0 8px rgba(255, 71, 87, 0.4);
+}
+.animate-card {
+    animation: fadeUp 0.6s ease forwards;
+}
+
+@keyframes fadeUp {
+    from { opacity:0; transform: translateY(20px); }
+    to { opacity:1; transform: translateY(0); }
+}
+
+.card-actions {
+    margin-top:10px;
+}
+
+.heart-btn, .watch-btn {
+    text-decoration:none;
+    font-size:18px;
+    margin-right:10px;
+    transition:0.3s;
+}
+
+.heart-btn:hover {
+    color:red;
+    transform:scale(1.2);
+}
+
+.watch-btn:hover {
+    color:pink;
+    transform:scale(1.2);
+}
+
+.trophy-title {
+    color: gold;
+    text-shadow: 0 0 15px rgba(255,215,0,0.8);
+}

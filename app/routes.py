@@ -142,61 +142,50 @@ def admin_dashboard():
 @login_required
 def top_rankings():
     page = request.args.get("page", 1, type=int)
-    per_page = 12
+    genre = request.args.get("genre")
+    per_page = 10
     offset = (page - 1) * per_page
+
     conn = sqlite3.connect(os.path.join(PROJECT_ROOT, "anime.db"))
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT * FROM anime
-        WHERE score IS NOT NULL
-        ORDER BY score DESC, RANDOM()
-        LIMIT ? OFFSET ?
-    """, (per_page, offset))
+    if genre:
+        cursor.execute("""
+            SELECT * FROM anime
+            WHERE genres LIKE ? AND score IS NOT NULL
+            ORDER BY score DESC
+            LIMIT ? OFFSET ?
+        """, (f"%{genre}%", per_page, offset))
+    else:
+        cursor.execute("""
+            SELECT * FROM anime
+            WHERE score IS NOT NULL
+            ORDER BY score DESC
+            LIMIT ? OFFSET ?
+        """, (per_page, offset))
 
-    anime_list = cursor.fetchall()
+    rankings = cursor.fetchall()
 
     cursor.execute("SELECT COUNT(*) FROM anime WHERE score IS NOT NULL")
     total = cursor.fetchone()[0]
     conn.close()
 
-    has_next = offset + per_page < total
-    has_prev = page > 1
+    total_pages = (total // per_page) + 1
 
     return render_template(
         "index.html",
-        top_rankings=anime_list,
+        rankings=rankings,
         page=page,
-        has_next=has_next,
-        has_prev=has_prev
+        total_pages=total_pages
     )
-@main.route("/add-favorite/<int:anime_id>")
-@login_required
-def add_favorite(anime_id):
-    conn = sqlite3.connect(os.path.join(PROJECT_ROOT, "user_info.db"))
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        INSERT INTO favorites (user_id, anime_id)
-        VALUES (?, ?)
-    """, (current_user.id, anime_id))
-
-    conn.commit()
-    conn.close()
-
-    return redirect(request.referrer)
-
-
-
-
 
 # =================favourites =================
 
 @main.route("/favorites")
 @login_required
 def favorites():
-    conn = sqlite3.connect("user_info.db")
+    conn = sqlite3.connect(os.path.join(PROJECT_ROOT, "user_info.db"))
     cursor = conn.cursor()
 
     cursor.execute("SELECT anime_id FROM favorites WHERE user_id=?", (current_user.id,))
@@ -206,7 +195,7 @@ def favorites():
     if not anime_ids:
         return render_template("index.html", favorite_list=[])
 
-    conn2 = sqlite3.connect("anime.db")
+    conn2 = sqlite3.connect(os.path.join(PROJECT_ROOT, "anime.db"))
     conn2.row_factory = sqlite3.Row
     cursor2 = conn2.cursor()
 
@@ -224,3 +213,32 @@ def favorites():
 def rankings():
     print("Ranking route hit")
     return "Working"
+
+# ================= WATCHLIST =================
+@main.route("/watchlist")
+@login_required
+def watchlist():
+    conn = sqlite3.connect(os.path.join(PROJECT_ROOT, "user_info.db"))
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT anime_id FROM watchlist WHERE user_id=?", (current_user.id,))
+    anime_ids = [row[0] for row in cursor.fetchall()]
+    conn.close()
+
+    if not anime_ids:
+        return render_template("index.html", watchlist=[])
+
+    conn2 = sqlite3.connect(os.path.join(PROJECT_ROOT, "anime.db"))
+    conn2.row_factory = sqlite3.Row
+    cursor2 = conn2.cursor()
+
+    query = f"""
+        SELECT * FROM anime
+        WHERE anime_id IN ({','.join(['?']*len(anime_ids))})
+    """
+
+    cursor2.execute(query, anime_ids)
+    watchlist = cursor2.fetchall()
+    conn2.close()
+
+    return render_template("index.html", watchlist=watchlist)
