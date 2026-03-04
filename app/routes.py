@@ -10,7 +10,9 @@ main = Blueprint("main", __name__)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ANIME_DB_PATH = os.path.join(BASE_DIR, "anime.db")
+import os
 
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
 
 # ================= HOME =================
 @main.route("/")
@@ -142,8 +144,7 @@ def top_rankings():
     page = request.args.get("page", 1, type=int)
     per_page = 12
     offset = (page - 1) * per_page
-
-    conn = sqlite3.connect("anime.db")
+    conn = sqlite3.connect(os.path.join(PROJECT_ROOT, "anime.db"))
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -173,7 +174,7 @@ def top_rankings():
 @main.route("/add-favorite/<int:anime_id>")
 @login_required
 def add_favorite(anime_id):
-    conn = sqlite3.connect("user_info.db")
+    conn = sqlite3.connect(os.path.join(PROJECT_ROOT, "user_info.db"))
     cursor = conn.cursor()
 
     cursor.execute("""
