@@ -169,7 +169,7 @@ def favorites():
     conn2.close()
 
     return render_template("index.html", favorites=favorite_list)
-"
+
 
 # ================= WATCHLIST =================
 @main.route("/watchlist")
