@@ -3,7 +3,6 @@ from flask_login import login_required, current_user
 from .recommender import get_recommendations, get_anime_by_genre
 import sqlite3
 import os
-from app.models import Favorite
 import random
 import math
 
