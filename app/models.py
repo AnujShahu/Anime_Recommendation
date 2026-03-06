@@ -1,6 +1,6 @@
-from flask_login import UserMixin
 import sqlite3
 import os
+from flask_login import UserMixin
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 USER_DB_PATH = os.path.join(BASE_DIR, "user_info.db")
@@ -18,23 +18,28 @@ class User(UserMixin):
     def get(user_id):
         conn = sqlite3.connect(USER_DB_PATH)
         cursor = conn.cursor()
+
         cursor.execute(
             "SELECT id, username, email, password, role FROM users WHERE id=?",
             (user_id,)
         )
+
         user = cursor.fetchone()
         conn.close()
 
         if user:
             return User(*user)
+
         return None
 
     @staticmethod
     def count_all():
         conn = sqlite3.connect(USER_DB_PATH)
         cursor = conn.cursor()
+
         cursor.execute("SELECT COUNT(*) FROM users")
         count = cursor.fetchone()[0]
+
         conn.close()
         return count
 
@@ -42,33 +47,30 @@ class User(UserMixin):
     def count_admins():
         conn = sqlite3.connect(USER_DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM users WHERE role IN ('admin','superadmin')")
+
+        cursor.execute(
+            "SELECT COUNT(*) FROM users WHERE role IN ('admin','superadmin')"
+        )
+
         count = cursor.fetchone()[0]
         conn.close()
         return count
-
-    @property
-    def is_admin(self):
-        return self.role in ["admin", "superadmin"]
 
     @staticmethod
     def get_recent_users(limit=5):
         conn = sqlite3.connect(USER_DB_PATH)
         cursor = conn.cursor()
+
         cursor.execute(
             "SELECT id, username, email, password, role FROM users ORDER BY id DESC LIMIT ?",
             (limit,)
         )
+
         users = cursor.fetchall()
         conn.close()
+
         return users
 
-
-
-class Favorite:
-    id = Column(Integer, primary_key=True)
-    anime_title = Column(String(255))
-    image_url = Column(String(500))
-    score = Column(Float)
-
-    user_id = Column(Integer, ForeignKey('user.id'))
+    @property
+    def is_admin(self):
+        return self.role in ["admin", "superadmin"]
