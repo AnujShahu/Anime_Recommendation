@@ -54,8 +54,16 @@
     </div>
 
     <h1 class="title">&#127884; Anime Recommendation System</h1>
+    <p class="hero-subtitle">Find, save, and curate your anime universe.</p>
     <button id="themeToggle" class="theme-toggle">Dark Mode</button>
 </div>
+
+{% if page_mode != "home" %}
+<div class="context-nav">
+    <a href="{{ url_for('main.home') }}" class="nav-chip">&#127968; Home</a>
+    <button type="button" class="nav-chip ghost" id="backBtn">&#8617; Back</button>
+</div>
+{% endif %}
 
 {% if page_mode in ["home", "search"] %}
 <div class="tabs">

@@ -352,6 +352,51 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    const backBtn = document.getElementById("backBtn");
+    if (backBtn) {
+        backBtn.addEventListener("click", function () {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = "/";
+            }
+        });
+    }
+
+    const heroShell = document.querySelector(".hero-shell");
+    if (heroShell && window.matchMedia("(pointer: fine)").matches) {
+        heroShell.classList.add("tilt");
+        heroShell.addEventListener("mousemove", (e) => {
+            const rect = heroShell.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            heroShell.style.transform = `perspective(900px) rotateX(${(-y * 3).toFixed(2)}deg) rotateY(${(x * 4).toFixed(2)}deg)`;
+        });
+        heroShell.addEventListener("mouseleave", () => {
+            heroShell.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg)";
+        });
+    }
+
+    const cards = document.querySelectorAll(".anime-card");
+    cards.forEach((card, idx) => {
+        card.style.setProperty("--stagger", `${Math.min(idx, 10) * 55}ms`);
+    });
+
+    if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("in-view");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+
+        cards.forEach((card) => observer.observe(card));
+    } else {
+        cards.forEach((card) => card.classList.add("in-view"));
+    }
+
     document.querySelectorAll(".flash-message").forEach((message) => {
         setTimeout(() => {
             message.classList.add("fade-out");
