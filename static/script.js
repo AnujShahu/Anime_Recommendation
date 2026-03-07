@@ -41,6 +41,29 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function activateCards(scope = document) {
+        const cards = scope.querySelectorAll(".anime-card");
+        cards.forEach((card, idx) => {
+            card.style.setProperty("--stagger", `${Math.min(idx, 10) * 55}ms`);
+        });
+
+        if ("IntersectionObserver" in window) {
+            if (!window.__animeCardObserver) {
+                window.__animeCardObserver = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add("in-view");
+                            window.__animeCardObserver.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.12 });
+            }
+            cards.forEach((card) => window.__animeCardObserver.observe(card));
+        } else {
+            cards.forEach((card) => card.classList.add("in-view"));
+        }
+    }
+
     const searchTab = document.getElementById("searchTab");
     const genreTab = document.getElementById("genreTab");
     const searchSection = document.getElementById("searchSection");
@@ -258,13 +281,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 results.forEach((anime) => {
                     genreResults.innerHTML += `
-                    <div class="anime-card clickable-card" data-title="${anime.title}" data-anime-id="${anime.anime_id}">
+                    <div class="anime-card clickable-card genre-result-card" data-title="${anime.title}" data-anime-id="${anime.anime_id}">
                         <img src="${anime.image_url}" class="anime-img" alt="${anime.title}">
                         <h3>${anime.title}</h3>
                         <p>${anime.genres}</p>
                         <p>Score: ${anime.score ?? "N/A"}</p>
                     </div>`;
                 });
+
+                activateCards(genreResults);
             })
             .catch(() => {
                 genreResults.innerHTML = "<p>Something went wrong. Please try again.</p>";
@@ -377,25 +402,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    const cards = document.querySelectorAll(".anime-card");
-    cards.forEach((card, idx) => {
-        card.style.setProperty("--stagger", `${Math.min(idx, 10) * 55}ms`);
-    });
-
-    if ("IntersectionObserver" in window) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("in-view");
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.12 });
-
-        cards.forEach((card) => observer.observe(card));
-    } else {
-        cards.forEach((card) => card.classList.add("in-view"));
-    }
+    activateCards(document);
 
     document.querySelectorAll(".flash-message").forEach((message) => {
         setTimeout(() => {
