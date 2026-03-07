@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 USER_DB_PATH = os.path.join(BASE_DIR, "user_info.db")
@@ -10,15 +10,39 @@ def init_user_db():
     conn = sqlite3.connect(USER_DB_PATH)
     cursor = conn.cursor()
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        role TEXT DEFAULT 'user'
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            role TEXT DEFAULT 'user'
+        )
+        """
     )
-    """)
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS favorites (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            anime_id INTEGER NOT NULL,
+            UNIQUE(user_id, anime_id)
+        )
+        """
+    )
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS watchlist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            anime_id INTEGER NOT NULL,
+            UNIQUE(user_id, anime_id)
+        )
+        """
+    )
 
     conn.commit()
     conn.close()
@@ -36,7 +60,7 @@ class UserService:
         try:
             cursor.execute(
                 "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'user')",
-                (username, email, hashed_password)
+                (username, email, hashed_password),
             )
             conn.commit()
             return True, "Account created successfully!"
@@ -51,7 +75,7 @@ class UserService:
         cursor = conn.cursor()
         cursor.execute(
             "SELECT id, username, email, password, role FROM users WHERE email=?",
-            (email,)
+            (email,),
         )
         user = cursor.fetchone()
         conn.close()
@@ -63,7 +87,7 @@ class UserService:
         cursor = conn.cursor()
         cursor.execute(
             "SELECT id, username, email, password, role FROM users WHERE id=?",
-            (user_id,)
+            (user_id,),
         )
         user = cursor.fetchone()
         conn.close()
@@ -76,7 +100,7 @@ class UserService:
         cursor = conn.cursor()
         cursor.execute(
             "UPDATE users SET password=? WHERE email=?",
-            (hashed, email)
+            (hashed, email),
         )
         conn.commit()
         conn.close()

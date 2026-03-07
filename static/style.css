@@ -423,3 +423,91 @@ body.light-mode p {
     color: gold;
     text-shadow: 0 0 15px rgba(255,215,0,0.8);
 }
+/* ================= LIGHT MODE FIXES ================= */
+body.light-mode {
+    background: linear-gradient(-45deg, #f8fafc, #dbeafe, #eef2ff);
+    background-size: 350% 350%;
+    color: #0f172a;
+}
+
+body.light-mode .container,
+body.light-mode .title,
+body.light-mode .recommend-title,
+body.light-mode p,
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3 {
+    color: #0f172a !important;
+    text-shadow: none;
+}
+
+body.light-mode .anime-card {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    color: #0f172a;
+}
+
+body.light-mode .tab {
+    background: rgba(15, 23, 42, 0.08);
+    color: #0f172a;
+}
+
+body.light-mode .tab.active {
+    color: #ffffff;
+}
+
+body.light-mode #searchInput,
+body.light-mode .modal-content input {
+    background: #ffffff;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+}
+
+body.light-mode .suggestions-box {
+    background: #ffffff;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+}
+
+body.light-mode .dropdown {
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid #cbd5e1;
+}
+
+body.light-mode .dropdown-item,
+body.light-mode .dropdown-item a {
+    color: #0f172a;
+    text-decoration: none;
+}
+
+body.light-mode .modal {
+    background: rgba(15, 23, 42, 0.3);
+}
+
+body.light-mode .modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+}
+
+body.light-mode .pagination a {
+    color: #0f172a;
+}
+
+.flash-container {
+    margin-bottom: 16px;
+}
+
+.flash-message {
+    background: rgba(255, 71, 87, 0.18);
+    border: 1px solid rgba(255, 71, 87, 0.45);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin: 8px auto;
+    max-width: 680px;
+}
+
+.dropdown-item a {
+    color: inherit;
+    text-decoration: none;
+}

@@ -1,12 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    /* ================= GOOGLE REDIRECT ================= */
     function redirectToGoogle(title) {
         const query = encodeURIComponent(title + " anime");
         window.open(`https://www.google.com/search?q=${query}`, "_blank");
     }
 
-    /* ================= ELEMENTS ================= */
     const searchTab = document.getElementById("searchTab");
     const genreTab = document.getElementById("genreTab");
     const searchSection = document.getElementById("searchSection");
@@ -34,12 +32,10 @@ document.addEventListener("DOMContentLoaded", function () {
     let debounceTimer;
     let currentPage = 1;
 
-    /* ================= THEME TOGGLE ================= */
     if (themeToggle) {
-
         if (localStorage.getItem("theme") === "light") {
             document.body.classList.add("light-mode");
-            themeToggle.textContent = "☀ Light Mode";
+            themeToggle.textContent = "Light Mode";
         }
 
         themeToggle.addEventListener("click", function () {
@@ -47,17 +43,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (document.body.classList.contains("light-mode")) {
                 localStorage.setItem("theme", "light");
-                themeToggle.textContent = "☀ Light Mode";
+                themeToggle.textContent = "Light Mode";
             } else {
                 localStorage.setItem("theme", "dark");
-                themeToggle.textContent = "🌙 Dark Mode";
+                themeToggle.textContent = "Dark Mode";
             }
         });
     }
 
-    /* ================= TAB SWITCH ================= */
     if (searchTab && genreTab && searchSection && genreSection) {
-
         searchTab.addEventListener("click", function () {
             searchTab.classList.add("active");
             genreTab.classList.remove("active");
@@ -73,17 +67,50 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    /* ================= LOAD TITLES ================= */
     if (searchInput && suggestionsBox) {
         fetch("/get_anime_titles")
-            .then(res => res.json())
-            .then(data => animeTitles = data.titles || []);
+            .then((res) => res.json())
+            .then((data) => {
+                animeTitles = data.titles || [];
+            })
+            .catch(() => {
+                animeTitles = [];
+            });
 
         searchInput.addEventListener("input", function () {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 showSuggestions(this.value.trim());
             }, 150);
+        });
+
+        searchInput.addEventListener("keydown", function (e) {
+            const items = suggestionsBox.getElementsByClassName("suggestion-item");
+            if (!items.length) return;
+
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                currentFocus++;
+                addActive(items);
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                currentFocus--;
+                addActive(items);
+            } else if (e.key === "Enter") {
+                if (currentFocus > -1 && items[currentFocus]) {
+                    e.preventDefault();
+                    items[currentFocus].click();
+                }
+            } else if (e.key === "PageDown") {
+                e.preventDefault();
+                suggestionsBox.scrollTop += suggestionsBox.clientHeight;
+            } else if (e.key === "PageUp") {
+                e.preventDefault();
+                suggestionsBox.scrollTop -= suggestionsBox.clientHeight;
+            } else if (e.key === "Escape") {
+                suggestionsBox.innerHTML = "";
+                currentFocus = -1;
+            }
         });
     }
 
@@ -95,23 +122,22 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!query) return;
 
         const input = query.toLowerCase();
-
         const ranked = animeTitles
-            .map(title => ({
+            .map((title) => ({
                 title: title,
-                score: calculateScore(title.toLowerCase(), input)
+                score: calculateScore(title.toLowerCase(), input),
             }))
-            .filter(item => item.score > 0)
+            .filter((item) => item.score > 0)
             .sort((a, b) => b.score - a.score)
             .slice(0, 8);
 
-        ranked.forEach(item => {
+        ranked.forEach((item) => {
             const div = document.createElement("div");
             div.classList.add("suggestion-item");
             div.innerHTML = highlightMatch(item.title, query);
 
             div.addEventListener("click", function () {
-                searchInput.value = item.title;
+                if (searchInput) searchInput.value = item.title;
                 suggestionsBox.innerHTML = "";
                 if (searchForm) searchForm.submit();
             });
@@ -125,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (title.includes(input)) return 60;
 
         let matches = 0;
-        for (let char of input) {
+        for (const char of input) {
             if (title.includes(char)) matches++;
         }
         return matches;
@@ -136,13 +162,11 @@ document.addEventListener("DOMContentLoaded", function () {
         return title.replace(regex, "<strong>$1</strong>");
     }
 
-    /* ================= GENRE SYSTEM (SAFE) ================= */
     if (genreContainer && genreSearchBtn && genreResults) {
-
         fetch("/get_genres")
-            .then(res => res.json())
-            .then(genres => {
-                genres.forEach(genre => {
+            .then((res) => res.json())
+            .then((genres) => {
+                genres.forEach((genre) => {
                     const btn = document.createElement("button");
                     btn.classList.add("genre-btn");
                     btn.textContent = genre;
@@ -151,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         btn.classList.toggle("selected");
 
                         if (selectedGenres.includes(genre)) {
-                            selectedGenres = selectedGenres.filter(g => g !== genre);
+                            selectedGenres = selectedGenres.filter((g) => g !== genre);
                         } else {
                             selectedGenres.push(genre);
                         }
@@ -159,9 +183,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     genreContainer.appendChild(btn);
                 });
+            })
+            .catch(() => {
+                genreContainer.innerHTML = "<p>Could not load genres.</p>";
             });
 
         genreSearchBtn.addEventListener("click", function () {
+            if (!selectedGenres.length) {
+                genreResults.innerHTML = "<p>Please select at least one genre.</p>";
+                return;
+            }
             currentPage = 1;
             loadGenreResults();
         });
@@ -177,66 +208,32 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 genres: selectedGenres,
-                page: currentPage
-            })
+                page: currentPage,
+            }),
         })
-        .then(res => res.json())
-        .then(results => {
+            .then((res) => res.json())
+            .then((results) => {
+                genreResults.innerHTML = "";
 
-            if (currentPage === 1) genreResults.innerHTML = "";
+                if (!results.length) {
+                    genreResults.innerHTML = "<p>No anime found for selected genres.</p>";
+                    return;
+                }
 
-            results.forEach(anime => {
-                genreResults.innerHTML += `
-                <div class="anime-card clickable-card"
-                     data-title="${anime.title}">
-                    <img src="${anime.image_url}" class="anime-img">
-                    <h3>${anime.title}</h3>
-                    <p>${anime.genres}</p>
-                    <p>⭐ ${anime.score}</p>
-                </div>`;
+                results.forEach((anime) => {
+                    genreResults.innerHTML += `
+                    <div class="anime-card clickable-card" data-title="${anime.title}">
+                        <img src="${anime.image_url}" class="anime-img" alt="${anime.title}">
+                        <h3>${anime.title}</h3>
+                        <p>${anime.genres}</p>
+                        <p>Score: ${anime.score ?? "N/A"}</p>
+                    </div>`;
+                });
+            })
+            .catch(() => {
+                genreResults.innerHTML = "<p>Something went wrong. Please try again.</p>";
             });
-        });
     }
- /* ================= KEYBOARD NAVIGATION ================= */
-    searchInput.addEventListener("keydown", function (e) {
-
-        const items = suggestionsBox.getElementsByClassName("suggestion-item");
-        if (!items.length) return;
-
-        if (e.key === "ArrowDown") {
-            e.preventDefault();
-            currentFocus++;
-            addActive(items);
-        }
-
-        else if (e.key === "ArrowUp") {
-            e.preventDefault();
-            currentFocus--;
-            addActive(items);
-        }
-
-        else if (e.key === "Enter") {
-            if (currentFocus > -1 && items[currentFocus]) {
-                e.preventDefault();
-                items[currentFocus].click();
-            }
-        }
-
-        else if (e.key === "PageDown") {
-            e.preventDefault();
-            suggestionsBox.scrollTop += suggestionsBox.clientHeight;
-        }
-
-        else if (e.key === "PageUp") {
-            e.preventDefault();
-            suggestionsBox.scrollTop -= suggestionsBox.clientHeight;
-        }
-
-        else if (e.key === "Escape") {
-            suggestionsBox.innerHTML = "";
-            currentFocus = -1;
-        }
-    });
 
     function addActive(items) {
         removeActive(items);
@@ -249,23 +246,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function removeActive(items) {
-        for (let item of items) {
+        for (const item of items) {
             item.classList.remove("active-suggestion");
         }
     }
 
-
-
-
-    /* ================= CARD REDIRECT ================= */
     document.addEventListener("click", function (e) {
+        const interactive = e.target.closest("a, button, input, textarea, form");
+        if (interactive) return;
+
         const card = e.target.closest(".clickable-card");
         if (card && card.dataset.title) {
             redirectToGoogle(card.dataset.title);
         }
     });
 
-    /* ================= MODALS ================= */
     function openModal(modal) {
         if (!modal) return;
         modal.classList.remove("hidden");
@@ -283,19 +278,7 @@ document.addEventListener("DOMContentLoaded", function () {
     window.openRegister = () => openModal(registerModal);
     window.closeRegister = () => closeModal(registerModal);
 
- /* ================= LOADER EFFECT TO TOP RANKINGS ================= */
-document.querySelectorAll(".tab").forEach(tab => {
-    tab.addEventListener("click", () => {
-        document.body.insertAdjacentHTML(
-            "beforeend",
-            `<div class="loader"></div>`
-        );
-    });
-});
-
-    /* ================= USER DROPDOWN ================= */
     if (userMenuBtn && userDropdown) {
-
         userMenuBtn.addEventListener("click", function (e) {
             e.stopPropagation();
             userDropdown.classList.toggle("hidden");
@@ -309,10 +292,4 @@ document.querySelectorAll(".tab").forEach(tab => {
             userDropdown.classList.add("hidden");
         });
     }
-const rankingTab = document.getElementById("rankingTab");
-const rankingSection = document.getElementById("rankingSection");
-
-rankingTab.addEventListener("click", () => {
-    window.location.href = "/rankings";
-});
 });
