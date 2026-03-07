@@ -5,6 +5,28 @@ document.addEventListener("DOMContentLoaded", function () {
         window.open(`https://www.google.com/search?q=${query}`, "_blank");
     }
 
+    function showFlashMessage(message) {
+        let flashContainer = document.getElementById("flashContainer");
+
+        if (!flashContainer) {
+            flashContainer = document.createElement("div");
+            flashContainer.id = "flashContainer";
+            flashContainer.className = "flash-container";
+            const container = document.querySelector(".container");
+            if (container) container.prepend(flashContainer);
+        }
+
+        const msg = document.createElement("div");
+        msg.className = "flash-message";
+        msg.textContent = message;
+        flashContainer.appendChild(msg);
+
+        setTimeout(() => {
+            msg.classList.add("fade-out");
+            setTimeout(() => msg.remove(), 300);
+        }, 2500);
+    }
+
     const searchTab = document.getElementById("searchTab");
     const genreTab = document.getElementById("genreTab");
     const searchSection = document.getElementById("searchSection");
@@ -252,6 +274,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     document.addEventListener("click", function (e) {
+        const actionLink = e.target.closest(".action-link");
+        if (actionLink) {
+            e.preventDefault();
+            fetch(actionLink.href, {
+                method: "GET",
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    showFlashMessage(data.message || "Updated");
+                })
+                .catch(() => showFlashMessage("Something went wrong. Try again."));
+            return;
+        }
+
         const interactive = e.target.closest("a, button, input, textarea, form");
         if (interactive) return;
 
@@ -292,4 +329,11 @@ document.addEventListener("DOMContentLoaded", function () {
             userDropdown.classList.add("hidden");
         });
     }
+
+    document.querySelectorAll(".flash-message").forEach((message) => {
+        setTimeout(() => {
+            message.classList.add("fade-out");
+            setTimeout(() => message.remove(), 300);
+        }, 2500);
+    });
 });

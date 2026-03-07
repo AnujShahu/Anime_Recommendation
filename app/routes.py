@@ -199,14 +199,20 @@ def add_favorite(anime_id):
 
     if exists:
         conn.close()
-        flash("Anime is already in Favorites.")
+        message = "Already in Favorites"
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({"ok": True, "message": message})
+        flash(message)
         return redirect(request.referrer or url_for("main.home"))
 
     cursor.execute("INSERT INTO favorites (user_id, anime_id) VALUES (?, ?)", (current_user.id, anime_id))
     conn.commit()
     conn.close()
 
-    flash("Added to Favorites")
+    message = "Added to Favorites"
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return jsonify({"ok": True, "message": message})
+    flash(message)
     return redirect(request.referrer or url_for("main.home"))
 
 
@@ -265,12 +271,18 @@ def add_watchlist(anime_id):
 
     if exists:
         conn.close()
-        flash("Anime is already in Watchlist.")
+        message = "Already in Watchlist"
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({"ok": True, "message": message})
+        flash(message)
         return redirect(request.referrer or url_for("main.home"))
 
     cursor.execute("INSERT INTO watchlist (user_id, anime_id) VALUES (?, ?)", (current_user.id, anime_id))
     conn.commit()
     conn.close()
 
-    flash("Added to Watchlist")
+    message = "Added to Watchlist"
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return jsonify({"ok": True, "message": message})
+    flash(message)
     return redirect(request.referrer or url_for("main.home"))

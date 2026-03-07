@@ -12,7 +12,7 @@
 
 {% with messages = get_flashed_messages() %}
 {% if messages %}
-<div class="flash-container">
+<div class="flash-container" id="flashContainer">
     {% for message in messages %}
     <div class="flash-message">{{ message }}</div>
     {% endfor %}
@@ -22,37 +22,37 @@
 
 <div class="user-menu">
     <div class="settings-icon" id="userMenuBtn">
-        {% if current_user.is_authenticated %} User {% else %} Menu {% endif %}
+        {% if current_user.is_authenticated %} &#128100; {% else %} &#9881; {% endif %}
     </div>
 
     <div class="dropdown hidden" id="userDropdown">
         {% if current_user.is_authenticated %}
-            <div class="dropdown-item">{{ current_user.username }}</div>
-            <div class="dropdown-item">Role: {{ current_user.role }}</div>
+            <div class="dropdown-item">&#128075; {{ current_user.username }}</div>
+            <div class="dropdown-item">&#128737; Role: {{ current_user.role }}</div>
 
             <div class="dropdown-item">
-                <a href="{{ url_for('main.top_rankings') }}">Top Rankings</a>
+                <a href="{{ url_for('main.top_rankings') }}">&#127942; Top Rankings</a>
             </div>
 
             <div class="dropdown-item">
-                <a href="{{ url_for('main.watchlist') }}">Watchlist</a>
+                <a href="{{ url_for('main.watchlist') }}">&#128151; Watchlist</a>
             </div>
 
             <div class="dropdown-item">
-                <a href="{{ url_for('main.favorites') }}">Favorites</a>
+                <a href="{{ url_for('main.favorites') }}">&#10084;&#65039; Favorites</a>
             </div>
 
             <div class="dropdown-item">
-                <a href="{{ url_for('auth.logout') }}">Logout</a>
+                <a href="{{ url_for('auth.logout') }}">&#128682; Logout</a>
             </div>
         {% else %}
-            <div class="dropdown-item" onclick="openLogin()">Login</div>
-            <div class="dropdown-item" onclick="openRegister()">Register</div>
+            <div class="dropdown-item" onclick="openLogin()">&#128274; Login</div>
+            <div class="dropdown-item" onclick="openRegister()">&#128221; Register</div>
         {% endif %}
     </div>
 </div>
 
-<h1 class="title">Anime Recommendation System</h1>
+<h1 class="title">&#127884; Anime Recommendation System</h1>
 
 <button id="themeToggle" class="theme-toggle">Dark Mode</button>
 
@@ -88,8 +88,8 @@
 
     {% if current_user.is_authenticated %}
     <div class="card-actions">
-        <a href="{{ url_for('main.add_favorite', anime_id=anime.anime_id) }}" class="heart-btn">Favorite</a>
-        <a href="{{ url_for('main.add_watchlist', anime_id=anime.anime_id) }}" class="watch-btn">Watchlist</a>
+        <a href="{{ url_for('main.add_favorite', anime_id=anime.anime_id) }}" class="heart-btn action-link" data-action="favorite">&#10084;&#65039; Favorite</a>
+        <a href="{{ url_for('main.add_watchlist', anime_id=anime.anime_id) }}" class="watch-btn action-link" data-action="watchlist">&#128151; Watchlist</a>
     </div>
     {% endif %}
 </div>
@@ -107,8 +107,8 @@
 
     {% if current_user.is_authenticated %}
     <div class="card-actions">
-        <a href="{{ url_for('main.add_favorite', anime_id=rec.anime_id) }}" class="heart-btn">Favorite</a>
-        <a href="{{ url_for('main.add_watchlist', anime_id=rec.anime_id) }}" class="watch-btn">Watchlist</a>
+        <a href="{{ url_for('main.add_favorite', anime_id=rec.anime_id) }}" class="heart-btn action-link" data-action="favorite">&#10084;&#65039; Favorite</a>
+        <a href="{{ url_for('main.add_watchlist', anime_id=rec.anime_id) }}" class="watch-btn action-link" data-action="watchlist">&#128151; Watchlist</a>
     </div>
     {% endif %}
 </div>
@@ -126,7 +126,7 @@
 
 {% if rankings %}
 <div id="rankingSection">
-<h2 class="recommend-title trophy-title">Top Ranked Anime</h2>
+<h2 class="recommend-title trophy-title">&#127942; Top Ranked Anime</h2>
 
 <div class="recommend-grid">
 {% for anime in rankings %}
@@ -137,8 +137,8 @@
 
     {% if current_user.is_authenticated %}
     <div class="card-actions">
-        <a href="{{ url_for('main.add_favorite', anime_id=anime.anime_id) }}" class="heart-btn">Favorite</a>
-        <a href="{{ url_for('main.add_watchlist', anime_id=anime.anime_id) }}" class="watch-btn">Watchlist</a>
+        <a href="{{ url_for('main.add_favorite', anime_id=anime.anime_id) }}" class="heart-btn action-link" data-action="favorite">&#10084;&#65039; Favorite</a>
+        <a href="{{ url_for('main.add_watchlist', anime_id=anime.anime_id) }}" class="watch-btn action-link" data-action="watchlist">&#128151; Watchlist</a>
     </div>
     {% endif %}
 </div>
@@ -161,7 +161,7 @@
 
 {% if favorites %}
 <div id="favoritesSection">
-<h2 class="recommend-title">My Favorites</h2>
+<h2 class="recommend-title">&#10084;&#65039; My Favorites</h2>
 <div class="recommend-grid">
 {% for fav in favorites %}
 <div class="anime-card animate-card clickable-card" data-title="{{ fav.title }}">
@@ -176,7 +176,7 @@
 
 {% if watchlist %}
 <div id="watchlistSection">
-<h2 class="recommend-title">My Watchlist</h2>
+<h2 class="recommend-title">&#128151; My Watchlist</h2>
 <div class="recommend-grid">
 {% for w in watchlist %}
 <div class="anime-card animate-card clickable-card" data-title="{{ w.title }}">
