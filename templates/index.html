@@ -20,53 +20,53 @@
 {% endif %}
 {% endwith %}
 
-<div class="user-menu">
-    <div class="settings-icon" id="userMenuBtn">
-        {% if current_user.is_authenticated %} &#128100; {% else %} &#9881; {% endif %}
+<div class="hero-shell">
+    <div class="user-menu">
+        <div class="settings-icon" id="userMenuBtn">
+            {% if current_user.is_authenticated %} &#128100; {% else %} &#9881; {% endif %}
+        </div>
+
+        <div class="dropdown hidden" id="userDropdown">
+            {% if current_user.is_authenticated %}
+                <div class="dropdown-item">&#128075; {{ current_user.username }}</div>
+                <div class="dropdown-item">&#128737; Role: {{ current_user.role }}</div>
+
+                <div class="dropdown-item">
+                    <a href="{{ url_for('main.top_rankings') }}">&#127942; Top Rankings</a>
+                </div>
+
+                <div class="dropdown-item">
+                    <a href="{{ url_for('main.watchlist') }}">&#128151; Watchlist</a>
+                </div>
+
+                <div class="dropdown-item">
+                    <a href="{{ url_for('main.favorites') }}">&#10084;&#65039; Favorites</a>
+                </div>
+
+                <div class="dropdown-item">
+                    <a href="{{ url_for('auth.logout') }}">&#128682; Logout</a>
+                </div>
+            {% else %}
+                <div class="dropdown-item" onclick="openLogin()">&#128274; Login</div>
+                <div class="dropdown-item" onclick="openRegister()">&#128221; Register</div>
+            {% endif %}
+        </div>
     </div>
 
-    <div class="dropdown hidden" id="userDropdown">
-        {% if current_user.is_authenticated %}
-            <div class="dropdown-item">&#128075; {{ current_user.username }}</div>
-            <div class="dropdown-item">&#128737; Role: {{ current_user.role }}</div>
-
-            <div class="dropdown-item">
-                <a href="{{ url_for('main.top_rankings') }}">&#127942; Top Rankings</a>
-            </div>
-
-            <div class="dropdown-item">
-                <a href="{{ url_for('main.watchlist') }}">&#128151; Watchlist</a>
-            </div>
-
-            <div class="dropdown-item">
-                <a href="{{ url_for('main.favorites') }}">&#10084;&#65039; Favorites</a>
-            </div>
-
-            <div class="dropdown-item">
-                <a href="{{ url_for('auth.logout') }}">&#128682; Logout</a>
-            </div>
-        {% else %}
-            <div class="dropdown-item" onclick="openLogin()">&#128274; Login</div>
-            <div class="dropdown-item" onclick="openRegister()">&#128221; Register</div>
-        {% endif %}
-    </div>
+    <h1 class="title">&#127884; Anime Recommendation System</h1>
+    <button id="themeToggle" class="theme-toggle">Dark Mode</button>
 </div>
 
-<h1 class="title">&#127884; Anime Recommendation System</h1>
-
-<button id="themeToggle" class="theme-toggle">Dark Mode</button>
-
+{% if page_mode in ["home", "search"] %}
 <div class="tabs">
     <button id="searchTab" class="tab active">Search by Name</button>
     <button id="genreTab" class="tab">Browse by Genre</button>
 </div>
 
 <div id="searchSection">
-
 <form method="POST" action="{{ url_for('main.recommend') }}" id="searchForm">
     <div class="search-wrapper">
-        <input type="text" id="searchInput" name="anime_name"
-               placeholder="Search Anime..." autocomplete="off" required>
+        <input type="text" id="searchInput" name="anime_name" placeholder="Search Anime..." autocomplete="off" required>
         <div id="suggestions" class="suggestions-box"></div>
     </div>
     <button type="submit" class="search-btn">Search</button>
@@ -74,12 +74,8 @@
 
 <div id="loader" class="loader hidden"></div>
 
-{% if error %}
-<p class="error">{{ error }}</p>
-{% endif %}
-
 {% if anime %}
-<div class="anime-card main-anime animate-card clickable-card" data-title="{{ anime.title }}">
+<div class="anime-card main-anime animate-card clickable-card" data-title="{{ anime.title }}" data-anime-id="{{ anime.anime_id }}">
     <img src="{{ anime.image_url }}" class="anime-img" alt="{{ anime.title }}">
     <h2>{{ anime.title }}</h2>
     <p><strong>Genres:</strong> {{ anime.genres }}</p>
@@ -99,7 +95,7 @@
 <h2 class="recommend-title">Recommended Anime</h2>
 <div class="recommend-grid">
 {% for rec in recommendations %}
-<div class="anime-card animate-card clickable-card" data-title="{{ rec.title }}">
+<div class="anime-card animate-card clickable-card" data-title="{{ rec.title }}" data-anime-id="{{ rec.anime_id }}">
     <img src="{{ rec.image_url }}" class="anime-img" alt="{{ rec.title }}">
     <h3>{{ rec.title }}</h3>
     <p>{{ rec.genres }}</p>
@@ -123,18 +119,17 @@
 <button id="genreSearchBtn" class="search-btn">Search by Selected Genres</button>
 <div id="genreResults" class="recommend-grid"></div>
 </div>
+{% endif %}
 
-{% if rankings %}
+{% if rankings is defined %}
 <div id="rankingSection">
 <h2 class="recommend-title trophy-title">&#127942; Top Ranked Anime</h2>
-
 <div class="recommend-grid">
 {% for anime in rankings %}
-<div class="anime-card animate-card clickable-card" data-title="{{ anime.title }}">
+<div class="anime-card animate-card clickable-card" data-title="{{ anime.title }}" data-anime-id="{{ anime.anime_id }}">
     <img src="{{ anime.image_url }}" class="anime-img" alt="{{ anime.title }}">
     <h3>{{ anime.title }}</h3>
     <p>Score: {{ anime.score }}</p>
-
     {% if current_user.is_authenticated %}
     <div class="card-actions">
         <a href="{{ url_for('main.add_favorite', anime_id=anime.anime_id) }}" class="heart-btn action-link" data-action="favorite">&#10084;&#65039; Favorite</a>
@@ -147,45 +142,55 @@
 
 {% if page and total_pages %}
 <div class="pagination">
-    {% if page > 1 %}
-        <a href="{{ url_for('main.top_rankings', page=page-1) }}">Prev</a>
-    {% endif %}
+    {% if page > 1 %}<a href="{{ url_for('main.top_rankings', page=page-1) }}">Prev</a>{% endif %}
     <span>Page {{ page }}</span>
-    {% if page < total_pages %}
-        <a href="{{ url_for('main.top_rankings', page=page+1) }}">Next</a>
-    {% endif %}
+    {% if page < total_pages %}<a href="{{ url_for('main.top_rankings', page=page+1) }}">Next</a>{% endif %}
 </div>
 {% endif %}
 </div>
 {% endif %}
 
-{% if favorites %}
+{% if favorites is defined %}
 <div id="favoritesSection">
 <h2 class="recommend-title">&#10084;&#65039; My Favorites</h2>
+{% if favorites %}
 <div class="recommend-grid">
 {% for fav in favorites %}
-<div class="anime-card animate-card clickable-card" data-title="{{ fav.title }}">
+<div class="anime-card animate-card clickable-card" data-title="{{ fav.title }}" data-anime-id="{{ fav.anime_id }}">
     <img src="{{ fav.image_url }}" class="anime-img" alt="{{ fav.title }}">
     <h3>{{ fav.title }}</h3>
     <p>Score: {{ fav.score }}</p>
+    <div class="card-actions">
+        <a href="{{ url_for('main.remove_favorite', anime_id=fav.anime_id) }}" class="remove-btn action-link" data-action="remove-favorite">&#128465; Remove</a>
+    </div>
 </div>
 {% endfor %}
 </div>
+{% else %}
+<p class="empty-note">No favorites yet. Add anime from search or rankings.</p>
+{% endif %}
 </div>
 {% endif %}
 
-{% if watchlist %}
+{% if watchlist is defined %}
 <div id="watchlistSection">
 <h2 class="recommend-title">&#128151; My Watchlist</h2>
+{% if watchlist %}
 <div class="recommend-grid">
 {% for w in watchlist %}
-<div class="anime-card animate-card clickable-card" data-title="{{ w.title }}">
+<div class="anime-card animate-card clickable-card" data-title="{{ w.title }}" data-anime-id="{{ w.anime_id }}">
     <img src="{{ w.image_url }}" class="anime-img" alt="{{ w.title }}">
     <h3>{{ w.title }}</h3>
     <p>Score: {{ w.score }}</p>
+    <div class="card-actions">
+        <a href="{{ url_for('main.remove_watchlist', anime_id=w.anime_id) }}" class="remove-btn action-link" data-action="remove-watchlist">&#128465; Remove</a>
+    </div>
 </div>
 {% endfor %}
 </div>
+{% else %}
+<p class="empty-note">No watchlist items yet. Add anime from search or rankings.</p>
+{% endif %}
 </div>
 {% endif %}
 

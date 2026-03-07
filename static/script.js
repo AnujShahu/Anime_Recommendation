@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-
     function redirectToGoogle(title) {
         const query = encodeURIComponent(title + " anime");
         window.open(`https://www.google.com/search?q=${query}`, "_blank");
@@ -25,6 +24,21 @@ document.addEventListener("DOMContentLoaded", function () {
             msg.classList.add("fade-out");
             setTimeout(() => msg.remove(), 300);
         }, 2500);
+    }
+
+    function maybeShowEmptyState(sectionSelector, text) {
+        const section = document.querySelector(sectionSelector);
+        if (!section) return;
+
+        const cards = section.querySelectorAll(".anime-card");
+        const existingEmpty = section.querySelector(".empty-note");
+
+        if (cards.length === 0 && !existingEmpty) {
+            const p = document.createElement("p");
+            p.className = "empty-note";
+            p.textContent = text;
+            section.appendChild(p);
+        }
     }
 
     const searchTab = document.getElementById("searchTab");
@@ -244,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 results.forEach((anime) => {
                     genreResults.innerHTML += `
-                    <div class="anime-card clickable-card" data-title="${anime.title}">
+                    <div class="anime-card clickable-card" data-title="${anime.title}" data-anime-id="${anime.anime_id}">
                         <img src="${anime.image_url}" class="anime-img" alt="${anime.title}">
                         <h3>${anime.title}</h3>
                         <p>${anime.genres}</p>
@@ -284,6 +298,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then((res) => res.json())
                 .then((data) => {
                     showFlashMessage(data.message || "Updated");
+
+                    if ((actionLink.dataset.action === "remove-favorite" || actionLink.dataset.action === "remove-watchlist") && data.ok) {
+                        const card = actionLink.closest(".anime-card");
+                        if (card) card.remove();
+
+                        maybeShowEmptyState("#favoritesSection", "No favorites yet. Add anime from search or rankings.");
+                        maybeShowEmptyState("#watchlistSection", "No watchlist items yet. Add anime from search or rankings.");
+                    }
                 })
                 .catch(() => showFlashMessage("Something went wrong. Try again."));
             return;

@@ -12,10 +12,14 @@ ANIME_DB_PATH = os.path.join(BASE_DIR, "anime.db")
 USER_DB_PATH = os.path.join(BASE_DIR, "user_info.db")
 
 
+def _is_ajax_request():
+    return request.headers.get("X-Requested-With") == "XMLHttpRequest"
+
+
 # ================= HOME =================
 @main.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html", page_mode="home")
 
 
 # ================= RECOMMEND =================
@@ -35,6 +39,7 @@ def recommend():
 
     return render_template(
         "index.html",
+        page_mode="home",
         anime=anime.to_dict() if anime is not None else None,
         recommendations=recommendations.to_dict(orient="records") if recommendations is not None else [],
     )
@@ -150,7 +155,7 @@ def favorites():
     conn.close()
 
     if not anime_ids:
-        return render_template("index.html", favorites=[])
+        return render_template("index.html", page_mode="favorites", favorites=[])
 
     conn2 = sqlite3.connect(ANIME_DB_PATH)
     conn2.row_factory = sqlite3.Row
@@ -160,7 +165,7 @@ def favorites():
     favorite_list = cursor2.fetchall()
     conn2.close()
 
-    return render_template("index.html", favorites=favorite_list)
+    return render_template("index.html", page_mode="favorites", favorites=favorite_list)
 
 
 # ================= WATCHLIST =================
@@ -174,7 +179,7 @@ def watchlist():
     conn.close()
 
     if not anime_ids:
-        return render_template("index.html", watchlist=[])
+        return render_template("index.html", page_mode="watchlist", watchlist=[])
 
     conn2 = sqlite3.connect(ANIME_DB_PATH)
     conn2.row_factory = sqlite3.Row
@@ -184,7 +189,7 @@ def watchlist():
     watchlist_data = cursor2.fetchall()
     conn2.close()
 
-    return render_template("index.html", watchlist=watchlist_data)
+    return render_template("index.html", page_mode="watchlist", watchlist=watchlist_data)
 
 
 # ================= ADD FAVORITE =================
@@ -200,7 +205,7 @@ def add_favorite(anime_id):
     if exists:
         conn.close()
         message = "Already in Favorites"
-        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        if _is_ajax_request():
             return jsonify({"ok": True, "message": message})
         flash(message)
         return redirect(request.referrer or url_for("main.home"))
@@ -210,10 +215,27 @@ def add_favorite(anime_id):
     conn.close()
 
     message = "Added to Favorites"
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+    if _is_ajax_request():
         return jsonify({"ok": True, "message": message})
     flash(message)
     return redirect(request.referrer or url_for("main.home"))
+
+
+# ================= REMOVE FAVORITE =================
+@main.route("/remove_favorite/<int:anime_id>")
+@login_required
+def remove_favorite(anime_id):
+    conn = sqlite3.connect(USER_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM favorites WHERE user_id=? AND anime_id=?", (current_user.id, anime_id))
+    conn.commit()
+    conn.close()
+
+    message = "Removed from Favorites"
+    if _is_ajax_request():
+        return jsonify({"ok": True, "message": message, "anime_id": anime_id})
+    flash(message)
+    return redirect(request.referrer or url_for("main.favorites"))
 
 
 # ================= TOP RANKINGS =================
@@ -256,7 +278,7 @@ def top_rankings():
     conn.close()
 
     total_pages = math.ceil(total / per_page) if total else 1
-    return render_template("index.html", rankings=rankings, page=page, total_pages=total_pages)
+    return render_template("index.html", page_mode="rankings", rankings=rankings, page=page, total_pages=total_pages)
 
 
 # ================= ADD WATCHLIST =================
@@ -272,7 +294,7 @@ def add_watchlist(anime_id):
     if exists:
         conn.close()
         message = "Already in Watchlist"
-        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        if _is_ajax_request():
             return jsonify({"ok": True, "message": message})
         flash(message)
         return redirect(request.referrer or url_for("main.home"))
@@ -282,7 +304,24 @@ def add_watchlist(anime_id):
     conn.close()
 
     message = "Added to Watchlist"
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+    if _is_ajax_request():
         return jsonify({"ok": True, "message": message})
     flash(message)
     return redirect(request.referrer or url_for("main.home"))
+
+
+# ================= REMOVE WATCHLIST =================
+@main.route("/remove_watchlist/<int:anime_id>")
+@login_required
+def remove_watchlist(anime_id):
+    conn = sqlite3.connect(USER_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM watchlist WHERE user_id=? AND anime_id=?", (current_user.id, anime_id))
+    conn.commit()
+    conn.close()
+
+    message = "Removed from Watchlist"
+    if _is_ajax_request():
+        return jsonify({"ok": True, "message": message, "anime_id": anime_id})
+    flash(message)
+    return redirect(request.referrer or url_for("main.watchlist"))
