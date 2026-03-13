@@ -16,6 +16,10 @@ def _is_ajax_request():
     return request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
 
+def _is_superadmin():
+    return current_user.is_authenticated and current_user.role == "superadmin"
+
+
 # ================= HOME =================
 @main.route("/")
 def home():
@@ -142,6 +146,72 @@ def admin_dashboard():
         total_admins=total_admins,
         recent_users=recent_users,
     )
+
+
+@main.route("/admin-users")
+@login_required
+def admin_users():
+    if not current_user.is_admin:
+        flash("Access denied. Admins only.")
+        return redirect(url_for("main.home"))
+
+    conn = sqlite3.connect(USER_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, username, email, role FROM users ORDER BY id DESC")
+    users = cursor.fetchall()
+    conn.close()
+    return render_template("users.html", users=users)
+
+
+@main.route("/superadmin")
+@login_required
+def superadmin_panel():
+    if not _is_superadmin():
+        flash("Access denied. Superadmin only.")
+        return redirect(url_for("main.home"))
+
+    conn = sqlite3.connect(USER_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, username, email, role FROM users ORDER BY id DESC")
+    users = cursor.fetchall()
+    conn.close()
+    return render_template("superadmin_panel.html", users=users)
+
+
+@main.route("/superadmin/update-role", methods=["POST"])
+@login_required
+def superadmin_update_role():
+    if not _is_superadmin():
+        flash("Access denied. Superadmin only.")
+        return redirect(url_for("main.home"))
+
+    email = request.form.get("email")
+    role = request.form.get("role")
+
+    if role not in ("admin", "user"):
+        flash("Invalid role.")
+        return redirect(url_for("main.superadmin_panel"))
+
+    from .user_service import UserService
+
+    user = UserService.get_user_by_email(email)
+    if not user:
+        flash("User not found.")
+        return redirect(url_for("main.superadmin_panel"))
+
+    _, _, user_email, _, user_role = user
+
+    if user_role == "superadmin" and user_email != current_user.email:
+        flash("Cannot change another superadmin.")
+        return redirect(url_for("main.superadmin_panel"))
+
+    if user_email == current_user.email and role != "superadmin":
+        flash("You cannot remove your own superadmin role.")
+        return redirect(url_for("main.superadmin_panel"))
+
+    UserService.update_role_by_email(email, role)
+    flash("Role updated.")
+    return redirect(url_for("main.superadmin_panel"))
 
 
 # ================= FAVORITES =================

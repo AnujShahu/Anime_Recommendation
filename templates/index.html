@@ -43,6 +43,18 @@
                     <a href="{{ url_for('main.favorites') }}">&#10084;&#65039; Favorites</a>
                 </div>
 
+                {% if current_user.is_admin %}
+                <div class="dropdown-item">
+                    <a href="{{ url_for('main.admin_users') }}">All Users</a>
+                </div>
+                {% endif %}
+
+                {% if current_user.role == "superadmin" %}
+                <div class="dropdown-item">
+                    <a href="{{ url_for('main.superadmin_panel') }}">Manage Admins</a>
+                </div>
+                {% endif %}
+
                 <div class="dropdown-item">
                     <a href="{{ url_for('auth.logout') }}">&#128682; Logout</a>
                 </div>

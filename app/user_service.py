@@ -120,6 +120,17 @@ class UserService:
         conn.close()
 
     @staticmethod
+    def update_role_by_email(email, role):
+        conn = sqlite3.connect(USER_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE users SET role=? WHERE email=?",
+            (role, email),
+        )
+        conn.commit()
+        conn.close()
+
+    @staticmethod
     def create_password_reset(email, code, expires_at):
         conn = sqlite3.connect(USER_DB_PATH)
         cursor = conn.cursor()
