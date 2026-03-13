@@ -148,6 +148,9 @@ def admin_dashboard():
 @main.route("/favorites")
 @login_required
 def favorites():
+    from .user_service import init_user_db
+    init_user_db()
+
     conn = sqlite3.connect(USER_DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT anime_id FROM favorites WHERE user_id=?", (current_user.id,))
@@ -172,6 +175,9 @@ def favorites():
 @main.route("/watchlist")
 @login_required
 def watchlist():
+    from .user_service import init_user_db
+    init_user_db()
+
     conn = sqlite3.connect(USER_DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT anime_id FROM watchlist WHERE user_id=?", (current_user.id,))
@@ -196,6 +202,9 @@ def watchlist():
 @main.route("/add_favorite/<int:anime_id>")
 @login_required
 def add_favorite(anime_id):
+    from .user_service import init_user_db
+    init_user_db()
+
     conn = sqlite3.connect(USER_DB_PATH)
     cursor = conn.cursor()
 
@@ -225,6 +234,9 @@ def add_favorite(anime_id):
 @main.route("/remove_favorite/<int:anime_id>")
 @login_required
 def remove_favorite(anime_id):
+    from .user_service import init_user_db
+    init_user_db()
+
     conn = sqlite3.connect(USER_DB_PATH)
     cursor = conn.cursor()
     cursor.execute("DELETE FROM favorites WHERE user_id=? AND anime_id=?", (current_user.id, anime_id))
@@ -285,6 +297,9 @@ def top_rankings():
 @main.route("/add_watchlist/<int:anime_id>")
 @login_required
 def add_watchlist(anime_id):
+    from .user_service import init_user_db
+    init_user_db()
+
     conn = sqlite3.connect(USER_DB_PATH)
     cursor = conn.cursor()
 
@@ -314,6 +329,9 @@ def add_watchlist(anime_id):
 @main.route("/remove_watchlist/<int:anime_id>")
 @login_required
 def remove_watchlist(anime_id):
+    from .user_service import init_user_db
+    init_user_db()
+
     conn = sqlite3.connect(USER_DB_PATH)
     cursor = conn.cursor()
     cursor.execute("DELETE FROM watchlist WHERE user_id=? AND anime_id=?", (current_user.id, anime_id))
