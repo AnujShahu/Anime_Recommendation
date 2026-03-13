@@ -213,6 +213,18 @@
 <input type="password" name="password" placeholder="Password" required>
 <button type="submit" class="search-btn">Login</button>
 </form>
+<button type="button" class="link-btn" onclick="openForgot()">Forgot password?</button>
+</div>
+</div>
+
+<div id="forgotModal" class="modal hidden">
+<div class="modal-content">
+<span class="close" onclick="closeForgot()">&times;</span>
+<h2>Reset Password</h2>
+<form method="POST" action="{{ url_for('auth.forgot_password') }}">
+<input type="email" name="email" placeholder="Registered email" required>
+<button type="submit" class="search-btn">Send Code</button>
+</form>
 </div>
 </div>
 

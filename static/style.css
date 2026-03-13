@@ -252,6 +252,16 @@ body::before {
     font-weight: 600;
 }
 
+.link-btn {
+    margin-top: 10px;
+    background: none;
+    border: none;
+    color: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 600;
+}
+
 .heart-btn { background: rgba(255, 79, 112, 0.2); color: #ffd3dc; }
 .watch-btn { background: rgba(255, 196, 112, 0.2); color: #ffe7c5; }
 .remove-btn { background: rgba(248, 113, 113, 0.2); color: #fecaca; }

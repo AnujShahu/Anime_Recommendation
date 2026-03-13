@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Code</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="flash-container" id="flashContainer">
+        {% for message in messages %}
+        <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="hero-shell">
+        <h1 class="title">Verify Code</h1>
+        <p class="hero-subtitle">Enter the six digit code sent to your email.</p>
+    </div>
+
+    <div class="modal-content" style="margin: 0 auto;">
+        <form method="POST" action="{{ url_for('auth.verify_code') }}">
+            <input type="hidden" name="email" value="{{ email }}">
+            <input type="text" name="code" placeholder="Six digit code" required>
+            <button type="submit" class="search-btn">Verify Code</button>
+        </form>
+        <div class="context-nav" style="margin-top: 16px;">
+            <a href="{{ url_for('main.home') }}" class="nav-chip">Home</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

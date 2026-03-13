@@ -81,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const loginModal = document.getElementById("loginModal");
     const registerModal = document.getElementById("registerModal");
+    const forgotModal = document.getElementById("forgotModal");
 
     const userMenuBtn = document.getElementById("userMenuBtn");
     const userDropdown = document.getElementById("userDropdown");
@@ -361,6 +362,8 @@ document.addEventListener("DOMContentLoaded", function () {
     window.closeLogin = () => closeModal(loginModal);
     window.openRegister = () => openModal(registerModal);
     window.closeRegister = () => closeModal(registerModal);
+    window.openForgot = () => openModal(forgotModal);
+    window.closeForgot = () => closeModal(forgotModal);
 
     if (userMenuBtn && userDropdown) {
         userMenuBtn.addEventListener("click", function (e) {
