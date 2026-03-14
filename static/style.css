@@ -58,6 +58,22 @@ body::before {
     color: #fff;
 }
 
+.status-panel {
+    position: absolute;
+    top: 64px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.status-label {
+    font-size: 0.85rem;
+    letter-spacing: 0.4px;
+    opacity: 0.8;
+}
+
 .tabs {
     display: flex;
     justify-content: center;
@@ -336,6 +352,7 @@ body.light-mode h3 {
     .anime-img { height: 260px; }
     .theme-toggle { position: static; margin-top: 6px; }
     .user-menu { top: 10px; left: 10px; }
+    .status-panel { position: static; align-items: center; margin-top: 8px; }
 }
 
 /* ================= PREMIUM MOTION LAYER ================= */

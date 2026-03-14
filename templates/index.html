@@ -68,6 +68,17 @@
     <h1 class="title">&#127884; Anime Recommendation System</h1>
     <p class="hero-subtitle">Find, save, and curate your anime universe.</p>
     <button id="themeToggle" class="theme-toggle">Dark Mode</button>
+    {% if page_mode in ["home", "search"] %}
+    <div id="statusPanel" class="status-panel">
+        <div class="status-label">Live Search</div>
+        <select name="status" id="statusSelect" class="status-select" form="searchForm">
+            <option value="">Local search (fast)</option>
+            <option value="AIRING">Ongoing (AIRING)</option>
+            <option value="FINISHED">Completed (FINISHED)</option>
+            <option value="NOT_YET_RELEASED">Upcoming (NOT_YET_RELEASED)</option>
+        </select>
+    </div>
+    {% endif %}
 </div>
 
 {% if page_mode != "home" %}
@@ -89,12 +100,6 @@
         <input type="text" id="searchInput" name="anime_name" placeholder="Search Anime..." autocomplete="off">
         <div id="suggestions" class="suggestions-box"></div>
     </div>
-    <select name="status" id="statusSelect" class="status-select">
-        <option value="">Local search (fast)</option>
-        <option value="AIRING">Ongoing (AIRING)</option>
-        <option value="FINISHED">Completed (FINISHED)</option>
-        <option value="NOT_YET_RELEASED">Upcoming (NOT_YET_RELEASED)</option>
-    </select>
     <button type="submit" class="search-btn">Search</button>
 </form>
 

@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const genreTab = document.getElementById("genreTab");
     const searchSection = document.getElementById("searchSection");
     const genreSection = document.getElementById("genreSection");
+    const statusPanel = document.getElementById("statusPanel");
 
     const searchInput = document.getElementById("searchInput");
     const suggestionsBox = document.getElementById("suggestions");
@@ -119,6 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
             genreTab.classList.remove("active");
             searchSection.classList.remove("hidden");
             genreSection.classList.add("hidden");
+            if (statusPanel) statusPanel.classList.remove("hidden");
         });
 
         genreTab.addEventListener("click", function () {
@@ -126,7 +128,12 @@ document.addEventListener("DOMContentLoaded", function () {
             searchTab.classList.remove("active");
             genreSection.classList.remove("hidden");
             searchSection.classList.add("hidden");
+            if (statusPanel) statusPanel.classList.add("hidden");
         });
+    }
+
+    if (statusPanel && searchTab && searchTab.classList.contains("active")) {
+        statusPanel.classList.remove("hidden");
     }
 
     if (searchInput && suggestionsBox) {
