@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-    function redirectToGoogle(title) {
-        const query = encodeURIComponent(title + " anime");
-        window.open(`https://www.google.com/search?q=${query}`, "_blank");
+    function redirectToAnimeAnyway(title) {
+        const query = encodeURIComponent(title);
+        window.open(`https://animeanyway.com/?s=${query}`, "_blank");
     }
 
     function showFlashMessage(message) {
@@ -85,6 +85,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const userMenuBtn = document.getElementById("userMenuBtn");
     const userDropdown = document.getElementById("userDropdown");
+
+    const isAuthenticated = document.body.dataset.auth === "1";
 
     let animeTitles = [];
     let selectedGenres = [];
@@ -281,12 +283,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 results.forEach((anime) => {
+                    const actions = isAuthenticated
+                        ? `<div class="card-actions">
+                                <a href="/add_favorite/${anime.anime_id}" class="heart-btn action-link" data-action="favorite">Favorite</a>
+                                <a href="/add_watchlist/${anime.anime_id}" class="watch-btn action-link" data-action="watchlist">Watchlist</a>
+                           </div>`
+                        : "";
+
                     genreResults.innerHTML += `
                     <div class="anime-card clickable-card genre-result-card" data-title="${anime.title}" data-anime-id="${anime.anime_id}">
                         <img src="${anime.image_url}" class="anime-img" alt="${anime.title}">
                         <h3>${anime.title}</h3>
                         <p>${anime.genres}</p>
                         <p>Score: ${anime.score ?? "N/A"}</p>
+                        ${actions}
                     </div>`;
                 });
 
@@ -342,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const card = e.target.closest(".clickable-card");
         if (card && card.dataset.title) {
-            redirectToGoogle(card.dataset.title);
+            redirectToAnimeAnyway(card.dataset.title);
         }
     });
 
