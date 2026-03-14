@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-    function redirectToAnimeAnyway(title) {
-        const query = encodeURIComponent(title);
-        window.open(`https://animeanyway.com/?s=${query}`, "_blank");
+    function redirectToGoogle(title) {
+        const query = encodeURIComponent(title + " anime");
+        window.open(`https://www.google.com/search?q=${query}`, "_blank");
     }
 
     function showFlashMessage(message) {
@@ -352,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const card = e.target.closest(".clickable-card");
         if (card && card.dataset.title) {
-            redirectToAnimeAnyway(card.dataset.title);
+            redirectToGoogle(card.dataset.title);
         }
     });
 

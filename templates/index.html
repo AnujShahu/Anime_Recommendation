@@ -86,9 +86,15 @@
 <div id="searchSection">
 <form method="POST" action="{{ url_for('main.recommend') }}" id="searchForm">
     <div class="search-wrapper">
-        <input type="text" id="searchInput" name="anime_name" placeholder="Search Anime..." autocomplete="off" required>
+        <input type="text" id="searchInput" name="anime_name" placeholder="Search Anime..." autocomplete="off">
         <div id="suggestions" class="suggestions-box"></div>
     </div>
+    <select name="status" id="statusSelect" class="status-select">
+        <option value="">Local search (fast)</option>
+        <option value="AIRING">Ongoing (AIRING)</option>
+        <option value="FINISHED">Completed (FINISHED)</option>
+        <option value="NOT_YET_RELEASED">Upcoming (NOT_YET_RELEASED)</option>
+    </select>
     <button type="submit" class="search-btn">Search</button>
 </form>
 
@@ -127,6 +133,21 @@
         <a href="{{ url_for('main.add_watchlist', anime_id=rec.anime_id) }}" class="watch-btn action-link" data-action="watchlist">&#128151; Watchlist</a>
     </div>
     {% endif %}
+</div>
+{% endfor %}
+</div>
+{% endif %}
+
+{% if live_results %}
+<h2 class="recommend-title">Live Results (AniList)</h2>
+<div class="recommend-grid">
+{% for live in live_results %}
+<div class="anime-card animate-card clickable-card" data-title="{{ live.title }}">
+    <img src="{{ live.image_url }}" class="anime-img" alt="{{ live.title }}">
+    <h3>{{ live.title }}</h3>
+    <p>{{ live.genres }}</p>
+    <p>Score: {{ live.score }}</p>
+    <p>Status: {{ live.status }}</p>
 </div>
 {% endfor %}
 </div>

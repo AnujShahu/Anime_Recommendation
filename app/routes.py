@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from .recommender import get_recommendations
+from .anilist_api import search_anime
 import sqlite3
 import os
 import math
@@ -30,15 +31,28 @@ def home():
 @main.route("/recommend", methods=["POST"])
 def recommend():
     anime_name = request.form.get("anime_name")
+    status = (request.form.get("status") or "").strip().upper()
 
-    if not anime_name:
-        flash("Please enter an anime name!")
+    if not anime_name and not status:
+        flash("Please enter an anime name or choose a status.")
         return redirect(url_for("main.home"))
 
-    anime, recommendations = get_recommendations(anime_name)
+    anime = None
+    recommendations = None
+
+    if anime_name and not status:
+        anime, recommendations = get_recommendations(anime_name)
 
     if anime is None:
-        flash("Anime not found.")
+        live_results = search_anime(anime_name, status=status or None)
+        if live_results:
+            return render_template(
+                "index.html",
+                page_mode="home",
+                live_results=live_results,
+                live_status=status or "ANY",
+            )
+        flash("No results found in local data or live API.")
         return redirect(url_for("main.home"))
 
     return render_template(
