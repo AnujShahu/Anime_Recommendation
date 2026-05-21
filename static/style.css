@@ -213,7 +213,44 @@ body::before {
     width: 220px;
 }
 
+.api-health-btn {
+    width: 220px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.api-health-status {
+    width: 220px;
+    min-height: 20px;
+    font-size: 0.82rem;
+    text-align: right;
+    color: var(--text-muted);
+}
+
+.api-health-status.ok {
+    color: #86efac;
+}
+
+.api-health-status.bad {
+    color: #fca5a5;
+}
+
+.api-health-status.checking {
+    color: #bae6fd;
+}
+
 body.light-mode .status-select {
+    background: rgba(255, 255, 255, 0.95);
+    color: #0f172a;
+    border-color: rgba(15, 23, 42, 0.2);
+}
+
+body.light-mode .api-health-btn {
     background: rgba(255, 255, 255, 0.95);
     color: #0f172a;
     border-color: rgba(15, 23, 42, 0.2);

@@ -79,6 +79,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const genreSearchBtn = document.getElementById("genreSearchBtn");
 
     const themeToggle = document.getElementById("themeToggle");
+    const apiHealthBtn = document.getElementById("apiHealthBtn");
+    const apiHealthStatus = document.getElementById("apiHealthStatus");
 
     const loginModal = document.getElementById("loginModal");
     const registerModal = document.getElementById("registerModal");
@@ -111,6 +113,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 localStorage.setItem("theme", "dark");
                 themeToggle.textContent = "Dark Mode";
             }
+        });
+    }
+
+    if (apiHealthBtn && apiHealthStatus) {
+        apiHealthBtn.addEventListener("click", function () {
+            apiHealthStatus.textContent = "Checking...";
+            apiHealthStatus.className = "api-health-status checking";
+
+            fetch("/api/anilist/health")
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.ok) {
+                        apiHealthStatus.textContent = "API working";
+                        apiHealthStatus.className = "api-health-status ok";
+                    } else {
+                        apiHealthStatus.textContent = data.message || "API not working";
+                        apiHealthStatus.className = "api-health-status bad";
+                    }
+                })
+                .catch(() => {
+                    apiHealthStatus.textContent = "API route not reachable";
+                    apiHealthStatus.className = "api-health-status bad";
+                });
         });
     }
 
