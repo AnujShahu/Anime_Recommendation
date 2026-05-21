@@ -1,8 +1,56 @@
 import json
 import urllib.request
+import urllib.error
 
 
 ANILIST_API_URL = "https://graphql.anilist.co"
+
+
+def check_anilist_health():
+    gql = """
+    query {
+      Page(page: 1, perPage: 1) {
+        media(type: ANIME, search: "Naruto") {
+          id
+          title { romaji english }
+        }
+      }
+    }
+    """
+
+    payload = json.dumps({"query": gql}).encode("utf-8")
+    req = urllib.request.Request(
+        ANILIST_API_URL,
+        data=payload,
+        headers={"Content-Type": "application/json", "Accept": "application/json"},
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=10) as response:
+            body = response.read().decode("utf-8")
+            data = json.loads(body)
+            media = data.get("data", {}).get("Page", {}).get("media", [])
+            return {
+                "ok": bool(media),
+                "status_code": response.status,
+                "sample_count": len(media),
+                "message": "AniList API is reachable." if media else "AniList responded, but no sample data returned.",
+            }
+    except urllib.error.HTTPError as error:
+        return {
+            "ok": False,
+            "status_code": error.code,
+            "sample_count": 0,
+            "message": f"AniList returned HTTP {error.code}.",
+        }
+    except Exception as error:
+        return {
+            "ok": False,
+            "status_code": None,
+            "sample_count": 0,
+            "message": str(error),
+        }
 
 
 def search_anime(query=None, status=None, per_page=12, page=1):

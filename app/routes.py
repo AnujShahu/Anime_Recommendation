@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from .recommender import get_recommendations
-from .anilist_api import search_anime
+from .anilist_api import search_anime, check_anilist_health
 import sqlite3
 import os
 import math
@@ -72,6 +72,11 @@ def get_anime_titles():
     titles = [row[0] for row in cursor.fetchall()]
     conn.close()
     return jsonify({"titles": titles})
+
+
+@main.route("/api/anilist/health")
+def anilist_health():
+    return jsonify(check_anilist_health())
 
 
 # ================= GET GENRES =================
