@@ -64,6 +64,35 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function buildSkeletonCards(count = 4) {
+        return Array.from({ length: count }, (_, index) => `
+            <div class="skeleton-card" style="--stagger: ${index * 70}ms">
+                <div class="skeleton-poster"></div>
+                <div class="skeleton-line title-line"></div>
+                <div class="skeleton-line"></div>
+                <div class="skeleton-line short-line"></div>
+            </div>
+        `).join("");
+    }
+
+    function showSearchSkeleton() {
+        if (!searchSection) return;
+
+        const existing = document.getElementById("searchSkeleton");
+        if (existing) existing.remove();
+
+        const oldResults = searchSection.querySelectorAll(".main-anime, .recommend-title, .recommend-grid");
+        oldResults.forEach((result) => result.remove());
+
+        searchSection.insertAdjacentHTML(
+            "beforeend",
+            `<div id="searchSkeleton" class="skeleton-wrap">
+                <div class="skeleton-heading"></div>
+                <div class="recommend-grid">${buildSkeletonCards(4)}</div>
+            </div>`
+        );
+    }
+
     const searchTab = document.getElementById("searchTab");
     const genreTab = document.getElementById("genreTab");
     const searchSection = document.getElementById("searchSection");
@@ -236,7 +265,14 @@ document.addEventListener("DOMContentLoaded", function () {
             div.addEventListener("click", function () {
                 if (searchInput) searchInput.value = item.title;
                 suggestionsBox.innerHTML = "";
-                if (searchForm) searchForm.submit();
+                if (searchForm) {
+                    if (searchForm.requestSubmit) {
+                        searchForm.requestSubmit();
+                    } else {
+                        showSearchSkeleton();
+                        searchForm.submit();
+                    }
+                }
             });
 
             suggestionsBox.appendChild(div);
@@ -295,10 +331,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    if (searchForm) {
+        searchForm.addEventListener("submit", function () {
+            showSearchSkeleton();
+        });
+    }
+
     function loadGenreResults() {
         if (!genreResults) return;
 
-        genreResults.innerHTML = `<div class="loader"></div>`;
+        genreResults.innerHTML = buildSkeletonCards(6);
 
         fetch("/search_by_genres", {
             method: "POST",

@@ -263,6 +263,19 @@ body.light-mode .api-health-btn {
     border-color: rgba(15, 23, 42, 0.2);
 }
 
+body.light-mode .skeleton-card {
+    background: rgba(255, 255, 255, 0.86);
+    border-color: rgba(15, 23, 42, 0.1);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+}
+
+body.light-mode .skeleton-heading,
+body.light-mode .skeleton-poster,
+body.light-mode .skeleton-line {
+    background: linear-gradient(90deg, rgba(15, 23, 42, 0.06), rgba(15, 23, 42, 0.14), rgba(15, 23, 42, 0.06));
+    background-size: 220% 100%;
+}
+
 body.light-mode .status-select option {
     background: #ffffff;
     color: #0f172a;
@@ -454,6 +467,59 @@ body.light-mode .status-select option {
     animation: spin 1s linear infinite;
 }
 
+.skeleton-wrap {
+    margin-top: 28px;
+    animation: fadeUp 0.35s ease;
+}
+
+.skeleton-heading {
+    width: min(260px, 70%);
+    height: 26px;
+    margin: 0 auto 18px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08));
+    background-size: 220% 100%;
+    animation: skeletonShimmer 1.2s ease-in-out infinite;
+}
+
+.skeleton-card {
+    padding: 16px;
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03));
+    box-shadow: 0 16px 36px rgba(5, 9, 20, 0.36);
+    animation: fadeUp 0.45s ease both;
+    animation-delay: var(--stagger, 0ms);
+}
+
+.skeleton-poster,
+.skeleton-line {
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08));
+    background-size: 220% 100%;
+    animation: skeletonShimmer 1.2s ease-in-out infinite;
+}
+
+.skeleton-poster {
+    height: 310px;
+    margin-bottom: 16px;
+}
+
+.skeleton-line {
+    height: 14px;
+    margin: 10px auto;
+    width: 86%;
+}
+
+.skeleton-line.title-line {
+    height: 20px;
+    width: 64%;
+}
+
+.skeleton-line.short-line {
+    width: 44%;
+}
+
 .hidden { display: none !important; }
 
 .suggestions-box {
@@ -618,10 +684,12 @@ body.light-mode .result-label {
 @keyframes fadeDown { from { opacity: 0; transform: translateY(-24px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes badgeFloat { 0% { transform: translateY(0); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0); } }
+@keyframes skeletonShimmer { 0% { background-position: 120% 50%; } 100% { background-position: -120% 50%; } }
 
 @media (max-width: 768px) {
     .title { font-size: 2.2rem; }
     .anime-img { height: 260px; }
+    .skeleton-poster { height: 260px; }
     .theme-toggle { position: static; margin-top: 6px; }
     .user-menu { top: 10px; left: 10px; }
     .status-panel { align-items: center; margin-top: 12px; width: 100%; }
