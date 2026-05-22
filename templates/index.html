@@ -127,18 +127,23 @@
 
 {% if anime %}
 <div class="anime-card main-anime animate-card clickable-card" data-title="{{ anime.title }}" data-anime-id="{{ anime.anime_id }}">
-    <img src="{{ anime.image_url }}" class="anime-img" alt="{{ anime.title }}">
-    <h2>{{ anime.title }}</h2>
-    <p><strong>Genres:</strong> {{ anime.genres }}</p>
-    <p><strong>Score:</strong> {{ anime.score }}</p>
-    <p><strong>Episodes:</strong> {{ anime.episodes }}</p>
-
-    {% if current_user.is_authenticated %}
-    <div class="card-actions">
-        <a href="{{ url_for('main.add_favorite', anime_id=anime.anime_id) }}" class="heart-btn action-link" data-action="favorite">&#10084;&#65039; Favorite</a>
-        <a href="{{ url_for('main.add_watchlist', anime_id=anime.anime_id) }}" class="watch-btn action-link" data-action="watchlist">&#128151; Watchlist</a>
+    <div class="main-anime-media">
+        <img src="{{ anime.image_url }}" class="anime-img" alt="{{ anime.title }}">
     </div>
-    {% endif %}
+    <div class="main-anime-body">
+        <span class="result-label">Best Match</span>
+        <h2>{{ anime.title }}</h2>
+        <p><strong>Genres:</strong> {{ anime.genres }}</p>
+        <p><strong>Score:</strong> {{ anime.score }}</p>
+        <p><strong>Episodes:</strong> {{ anime.episodes }}</p>
+
+        {% if current_user.is_authenticated %}
+        <div class="card-actions">
+            <a href="{{ url_for('main.add_favorite', anime_id=anime.anime_id) }}" class="heart-btn action-link" data-action="favorite">&#10084;&#65039; Favorite</a>
+            <a href="{{ url_for('main.add_watchlist', anime_id=anime.anime_id) }}" class="watch-btn action-link" data-action="watchlist">&#128151; Watchlist</a>
+        </div>
+        {% endif %}
+    </div>
 </div>
 {% endif %}
 

@@ -90,17 +90,19 @@ body::before {
 }
 
 .status-panel {
-    position: absolute;
-    top: 64px;
-    right: 18px;
+    position: relative;
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
     gap: 8px;
     background: rgba(12, 18, 32, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.16);
     border-radius: 16px;
     padding: 10px 12px;
+    margin: 16px auto 0;
+    width: fit-content;
+    max-width: 100%;
     backdrop-filter: blur(10px);
     z-index: 2;
 }
@@ -213,6 +215,11 @@ body::before {
     width: 220px;
 }
 
+.status-select option {
+    background: #111827;
+    color: #fff;
+}
+
 .api-health-btn {
     width: 220px;
     padding: 8px 12px;
@@ -228,7 +235,7 @@ body::before {
     width: 220px;
     min-height: 20px;
     font-size: 0.82rem;
-    text-align: right;
+    text-align: left;
     color: var(--text-muted);
 }
 
@@ -254,6 +261,11 @@ body.light-mode .api-health-btn {
     background: rgba(255, 255, 255, 0.95);
     color: #0f172a;
     border-color: rgba(15, 23, 42, 0.2);
+}
+
+body.light-mode .status-select option {
+    background: #ffffff;
+    color: #0f172a;
 }
 
 .genre-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
@@ -330,6 +342,63 @@ body.light-mode .api-health-btn {
 
 .anime-card:hover .anime-img {
     transform: scale(1.03);
+}
+
+.main-anime {
+    display: grid;
+    grid-template-columns: minmax(240px, 330px) 1fr;
+    align-items: center;
+    gap: 26px;
+    max-width: 980px;
+    margin: 30px auto 8px;
+    padding: 18px;
+    text-align: left;
+}
+
+.main-anime-media {
+    overflow: hidden;
+    border-radius: 16px;
+    background: rgba(2, 6, 23, 0.55);
+    box-shadow: 0 18px 40px rgba(2, 6, 23, 0.35);
+}
+
+.main-anime .anime-img {
+    display: block;
+    height: 420px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+.main-anime-body {
+    min-width: 0;
+}
+
+.main-anime-body h2 {
+    margin: 10px 0 14px;
+    font-size: 2rem;
+}
+
+.main-anime-body p {
+    margin: 10px 0;
+    color: var(--text-muted);
+}
+
+.main-anime .card-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.result-label {
+    display: inline-flex;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(96, 165, 250, 0.16);
+    color: #bfdbfe;
+    border: 1px solid rgba(96, 165, 250, 0.28);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 .user-menu {
@@ -535,6 +604,16 @@ body.light-mode .tab.active {
     color: #fff;
 }
 
+body.light-mode .main-anime-body p {
+    color: #334155;
+}
+
+body.light-mode .result-label {
+    background: rgba(37, 99, 235, 0.08);
+    color: #1d4ed8;
+    border-color: rgba(37, 99, 235, 0.18);
+}
+
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes fadeDown { from { opacity: 0; transform: translateY(-24px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
@@ -545,10 +624,22 @@ body.light-mode .tab.active {
     .anime-img { height: 260px; }
     .theme-toggle { position: static; margin-top: 6px; }
     .user-menu { top: 10px; left: 10px; }
-    .status-panel { position: static; align-items: center; margin-top: 8px; }
+    .status-panel { align-items: center; margin-top: 12px; width: 100%; }
     .search-shell { padding: 20px 16px 24px; }
     .hero-actions { gap: 8px; }
     .status-select { width: 100%; }
+    .api-health-btn,
+    .api-health-status { width: 100%; text-align: center; }
+    .main-anime {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .main-anime .anime-img {
+        height: 320px;
+    }
+    .main-anime .card-actions {
+        justify-content: center;
+    }
 }
 
 /* ================= PREMIUM MOTION LAYER ================= */
