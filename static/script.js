@@ -125,7 +125,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then((res) => res.json())
                 .then((data) => {
                     if (data.ok) {
-                        apiHealthStatus.textContent = "API working";
+                        const sources = data.working_sources && data.working_sources.length
+                            ? data.working_sources.join(" + ")
+                            : "Live API";
+                        apiHealthStatus.textContent = `${sources} working`;
                         apiHealthStatus.className = "api-health-status ok";
                     } else {
                         apiHealthStatus.textContent = data.message || "API not working";

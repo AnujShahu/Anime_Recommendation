@@ -71,7 +71,7 @@
         <div class="hero-badges">
             <span class="badge">Personalized picks</span>
             <span class="badge">7k+ curated titles</span>
-            <span class="badge">Live AniList search</span>
+            <span class="badge">AniList + Jikan live search</span>
         </div>
         <div class="hero-actions">
             <a href="{{ url_for('main.top_rankings') }}" class="action-pill">Top Rankings</a>
@@ -164,7 +164,7 @@
 {% endif %}
 
 {% if live_results %}
-<h2 class="recommend-title">Live Results (AniList)</h2>
+<h2 class="recommend-title">Live Results</h2>
 <div class="recommend-grid">
 {% for live in live_results %}
 <div class="anime-card animate-card clickable-card" data-title="{{ live.title }}">
@@ -173,6 +173,9 @@
     <p>{{ live.genres }}</p>
     <p>Score: {{ live.score }}</p>
     <p>Status: {{ live.status }}</p>
+    {% if live.source %}
+    <p>Source: {{ live.source }}</p>
+    {% endif %}
 </div>
 {% endfor %}
 </div>
