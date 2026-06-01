@@ -1246,3 +1246,255 @@ body.light-mode .status-panel {
         width: 100%;
     }
 }
+
+/* ================= SUNRISE ANIME THEME ================= */
+:root {
+    --ink: #111827;
+    --night: #171923;
+    --paper: #fff7ed;
+    --coral: #ff4d5f;
+    --coral-2: #ff7a59;
+    --teal: #00c2a8;
+    --sun: #ffd166;
+    --violet: #7c3aed;
+    --soft-line: rgba(255, 255, 255, 0.2);
+}
+
+body {
+    background:
+        linear-gradient(120deg, rgba(255, 77, 95, 0.22), transparent 28%),
+        linear-gradient(240deg, rgba(0, 194, 168, 0.18), transparent 34%),
+        linear-gradient(180deg, #151722 0%, #201826 48%, #12151e 100%);
+    color: #fffaf0;
+}
+
+body::before {
+    display: block;
+    z-index: -1;
+    background:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent 86%);
+}
+
+.hero-shell {
+    border: 1px solid rgba(255, 209, 102, 0.24);
+    background:
+        linear-gradient(135deg, rgba(255, 77, 95, 0.24), transparent 32%),
+        linear-gradient(315deg, rgba(0, 194, 168, 0.2), transparent 36%),
+        rgba(17, 24, 39, 0.88);
+    box-shadow: 0 26px 70px rgba(0, 0, 0, 0.38), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+}
+
+.title {
+    background: linear-gradient(90deg, #fff7ed, #ffd166 35%, #ff7a59 62%, #5eead4);
+    background-size: 180% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: none;
+}
+
+.hero-subtitle,
+.main-anime-body p,
+.empty-note {
+    color: rgba(255, 250, 240, 0.78);
+}
+
+.badge {
+    border: 1px solid rgba(255, 209, 102, 0.24);
+    background: rgba(255, 247, 237, 0.08);
+    color: #fff7ed;
+}
+
+.stat-tile {
+    border-color: rgba(255, 209, 102, 0.22);
+    background: linear-gradient(180deg, rgba(255, 247, 237, 0.1), rgba(255, 247, 237, 0.04));
+}
+
+.stat-tile strong {
+    color: #ffd166;
+}
+
+.theme-toggle,
+.search-btn,
+.action-pill,
+.tab.active,
+.genre-btn.selected {
+    background: linear-gradient(135deg, var(--coral), var(--coral-2));
+    box-shadow: 0 14px 32px rgba(255, 77, 95, 0.34);
+}
+
+.action-pill.ghost,
+.nav-chip,
+.tab,
+.api-health-btn,
+.status-select {
+    background: rgba(255, 247, 237, 0.08);
+    border-color: rgba(255, 247, 237, 0.18);
+    color: #fff7ed;
+}
+
+.status-panel,
+.search-shell,
+#genreSection {
+    border-color: rgba(255, 209, 102, 0.18);
+    background:
+        linear-gradient(180deg, rgba(255, 247, 237, 0.08), rgba(255, 247, 237, 0.035)),
+        rgba(17, 24, 39, 0.82);
+}
+
+#searchInput {
+    background: rgba(9, 13, 24, 0.86);
+    border-color: rgba(255, 209, 102, 0.18);
+    color: #fff7ed;
+}
+
+#searchInput:focus {
+    border-color: rgba(0, 194, 168, 0.65);
+    box-shadow: 0 0 0 4px rgba(0, 194, 168, 0.12), 0 18px 40px rgba(0, 0, 0, 0.34);
+}
+
+.recommend-title {
+    color: #fff7ed;
+}
+
+.recommend-title::after {
+    background: linear-gradient(90deg, var(--coral), var(--sun), var(--teal));
+}
+
+.anime-card {
+    background:
+        linear-gradient(180deg, rgba(255, 247, 237, 0.1), rgba(255, 247, 237, 0.035)),
+        rgba(17, 24, 39, 0.78);
+    border-color: rgba(255, 209, 102, 0.18);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+}
+
+.anime-card:hover {
+    box-shadow: 0 22px 52px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(0, 194, 168, 0.22) inset;
+}
+
+.anime-card h2,
+.anime-card h3 {
+    color: #fff7ed;
+}
+
+.anime-card p {
+    color: rgba(255, 250, 240, 0.74);
+}
+
+.result-label {
+    background: rgba(0, 194, 168, 0.14);
+    border-color: rgba(0, 194, 168, 0.34);
+    color: #99f6e4;
+}
+
+.heart-btn {
+    background: rgba(255, 77, 95, 0.18);
+    color: #fecdd3;
+}
+
+.watch-btn {
+    background: rgba(255, 209, 102, 0.16);
+    color: #fde68a;
+}
+
+.remove-btn {
+    background: rgba(255, 122, 89, 0.16);
+    color: #fed7aa;
+}
+
+.genre-btn {
+    background: rgba(255, 247, 237, 0.08);
+    border-color: rgba(255, 247, 237, 0.16);
+}
+
+.suggestions-box,
+.dropdown,
+.modal-content {
+    background: rgba(17, 24, 39, 0.96);
+    border-color: rgba(255, 209, 102, 0.18);
+}
+
+.suggestion-item:hover,
+.active-suggestion,
+.dropdown-item:hover {
+    background: linear-gradient(135deg, rgba(255, 77, 95, 0.28), rgba(0, 194, 168, 0.16));
+}
+
+.flash-message {
+    background: rgba(0, 194, 168, 0.14);
+    border-color: rgba(0, 194, 168, 0.34);
+}
+
+.skeleton-card {
+    border-color: rgba(255, 209, 102, 0.16);
+}
+
+.skeleton-heading,
+.skeleton-poster,
+.skeleton-line {
+    background: linear-gradient(90deg, rgba(255, 247, 237, 0.08), rgba(255, 209, 102, 0.18), rgba(255, 247, 237, 0.08));
+    background-size: 220% 100%;
+}
+
+body.light-mode {
+    background:
+        linear-gradient(120deg, rgba(255, 122, 89, 0.18), transparent 28%),
+        linear-gradient(240deg, rgba(0, 194, 168, 0.16), transparent 34%),
+        #fff7ed;
+    color: #1f2937;
+}
+
+body.light-mode::before {
+    display: block;
+    background:
+        linear-gradient(rgba(17, 24, 39, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17, 24, 39, 0.045) 1px, transparent 1px);
+    background-size: 44px 44px;
+}
+
+body.light-mode .hero-shell,
+body.light-mode .search-shell,
+body.light-mode .status-panel,
+body.light-mode #genreSection,
+body.light-mode .anime-card,
+body.light-mode .modal-content,
+body.light-mode .dropdown {
+    background: rgba(255, 255, 255, 0.78);
+    border-color: rgba(31, 41, 55, 0.12);
+    color: #1f2937;
+}
+
+body.light-mode .title {
+    background: linear-gradient(90deg, #111827, #e11d48, #0f766e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+}
+
+body.light-mode .hero-subtitle,
+body.light-mode .anime-card p,
+body.light-mode .main-anime-body p {
+    color: #475569;
+}
+
+body.light-mode .badge,
+body.light-mode .action-pill.ghost,
+body.light-mode .nav-chip,
+body.light-mode .tab,
+body.light-mode .api-health-btn,
+body.light-mode .status-select,
+body.light-mode .genre-btn {
+    background: rgba(255, 255, 255, 0.76);
+    color: #1f2937;
+    border-color: rgba(31, 41, 55, 0.12);
+}
+
+body.light-mode .anime-card h2,
+body.light-mode .anime-card h3,
+body.light-mode .recommend-title {
+    color: #111827 !important;
+}
