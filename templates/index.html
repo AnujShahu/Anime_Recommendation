@@ -73,6 +73,20 @@
             <span class="badge">7k+ curated titles</span>
             <span class="badge">AniList + Jikan live search</span>
         </div>
+        <div class="hero-stats">
+            <div class="stat-tile">
+                <strong>7k+</strong>
+                <span>Anime indexed</span>
+            </div>
+            <div class="stat-tile">
+                <strong>Live</strong>
+                <span>API fallback</span>
+            </div>
+            <div class="stat-tile">
+                <strong>Fast</strong>
+                <span>Local search</span>
+            </div>
+        </div>
         <div class="hero-actions">
             <a href="{{ url_for('main.top_rankings') }}" class="action-pill">Top Rankings</a>
             {% if current_user.is_authenticated %}
