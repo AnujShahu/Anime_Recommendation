@@ -126,6 +126,6 @@ Deploy to cloud (Render / Railway / Heroku)
 
 🧑‍💻 Author
 
-Anuj Sahu
+Anuj Shahu
 
 If you like this project, feel free to ⭐ the repo!
