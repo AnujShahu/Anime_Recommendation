@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ status_code }} - {{ error_title }} | Anime Recommendation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="error-page-body">
+
+<div class="container error-shell">
+    <div class="error-badge-row">
+        <span class="error-code-badge">{{ status_code }} ERROR</span>
+    </div>
+
+    <div class="error-visual">
+        <div class="error-art">
+            {% if status_code == 404 %}
+            &#127756;
+            {% elif status_code == 403 %}
+            &#128274;
+            {% else %}
+            &#9889;
+            {% endif %}
+        </div>
+    </div>
+
+    <h1 class="error-title">{{ error_title }}</h1>
+    <p class="error-subtitle">{{ error_subtitle }}</p>
+
+    {% if error_quote %}
+    <blockquote class="error-quote">{{ error_quote }}</blockquote>
+    {% endif %}
+
+    <div class="error-actions">
+        <a href="{{ url_for('main.home') }}" class="action-pill">&#127968; Return to Home</a>
+        <a href="{{ url_for('main.top_rankings') }}" class="action-pill ghost">&#127942; Top Rankings</a>
+        <a href="{{ url_for('main.about') }}" class="action-pill ghost">&#9875; About & FAQ</a>
+    </div>
+
+    <div class="error-help-box">
+        <p>Looking for a specific anime? Try searching from our <a href="{{ url_for('main.home') }}">homepage search bar</a> or check your URL for typos.</p>
+    </div>
+</div>
+
+</body>
+</html>

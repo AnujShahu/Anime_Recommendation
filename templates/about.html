@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About & FAQ | Anime Recommendation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="about-page-body">
+
+<div class="container about-shell">
+    <div class="about-header">
+        <a href="{{ url_for('main.home') }}" class="back-link">&#8592; Return to Anime App</a>
+        <h1>&#127916; About & Help Center</h1>
+        <p class="about-subtitle">Everything you need to know about our architecture, recommendation logic, and how to get the most out of your anime journey.</p>
+    </div>
+
+    <!-- MISSION & SYSTEM ARCHITECTURE -->
+    <div class="about-grid">
+        <div class="about-card">
+            <h3>&#127884; The Project Vision</h3>
+            <p>The Anime Recommendation System is built to deliver a modern, lightning-fast discovery experience. Whether you're a seasoned otaku or just diving into your first season, finding your next binge-worthy series should be effortless and intuitive.</p>
+            <div class="tech-pills">
+                <span class="badge">Python Flask</span>
+                <span class="badge">SQLite Database</span>
+                <span class="badge">AniList GraphQL</span>
+                <span class="badge">Jikan REST v4</span>
+                <span class="badge">Modern Glass UI</span>
+            </div>
+        </div>
+
+        <div class="about-card">
+            <h3>&#9881;&#65039; How It Works</h3>
+            <p><strong>1. Dual-Tier Indexing:</strong> We maintain a high-speed local database of 7,400+ curated titles for instant sub-millisecond search and genre filtering.</p>
+            <p><strong>2. Live API Fallback:</strong> If a searched title is brand new or airing this current season, our backend queries the AniList GraphQL engine (with secondary Jikan fallback) to deliver up-to-the-minute poster art, scores, and airing status.</p>
+            <p><strong>3. Content Matching:</strong> Matches anime based on intersecting thematic genres, rankings, and popularity metrics.</p>
+        </div>
+    </div>
+
+    <!-- FAQ SECTION -->
+    <section id="faq" class="faq-section">
+        <h2>&#10067; Frequently Asked Questions</h2>
+
+        <div class="faq-card">
+            <h4>How do recommendations work?</h4>
+            <p>When you search for a title (e.g. <em>Hunter x Hunter</em>), the engine identifies its primary genre signatures (such as Action, Adventure, Fantasy) and matches related series sharing similar themes, scoring, and popularity.</p>
+        </div>
+
+        <div class="faq-card">
+            <h4>What is the difference between Watchlist and Favorites?</h4>
+            <p><strong>Watchlist:</strong> Use this to queue up anime you plan to watch or are currently watching.<br>
+            <strong>Favorites:</strong> Use this for your all-time favorite masterworks that define your personal taste!</p>
+        </div>
+
+        <div class="faq-card">
+            <h4>Why do some anime have scores and others say "N/A"?</h4>
+            <p>Scores are compiled from MyAnimeList and AniList community ratings. Brand-new or upcoming series that haven't aired yet may not have received enough ratings to establish a global score.</p>
+        </div>
+
+        <div class="faq-card">
+            <h4>Can I change my preferred genres after onboarding?</h4>
+            <p>Yes! Navigate to your <a href="{{ url_for('main.profile') }}">Profile Settings</a> at any time to update your genre preferences.</p>
+        </div>
+
+        <div class="faq-card">
+            <h4>Where does the data and imagery come from?</h4>
+            <p>Posters, descriptions, and scores are provided via public open-source APIs from AniList and MyAnimeList (via Jikan). All media rights belong to their respective studios and licensors. Read our full <a href="{{ url_for('main.disclaimer') }}">Copyright Disclaimer</a>.</p>
+        </div>
+    </section>
+
+    <div class="about-footer-nav">
+        <a href="{{ url_for('main.home') }}" class="action-pill">&#127968; Start Searching</a>
+        <a href="{{ url_for('main.top_rankings') }}" class="action-pill ghost">&#127942; Explore Top Rankings</a>
+        <a href="{{ url_for('main.disclaimer') }}" class="action-pill ghost">&#9878;&#65039; Legal Disclaimer</a>
+    </div>
+</div>
+
+</body>
+</html>

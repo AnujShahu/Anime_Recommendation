@@ -7,12 +7,13 @@ USER_DB_PATH = os.path.join(BASE_DIR, "user_info.db")
 
 
 class User(UserMixin):
-    def __init__(self, id, username, email, password, role="user"):
+    def __init__(self, id, username, email, password, role="user", preferred_genres=""):
         self.id = str(id)
         self.username = username
         self.email = email
         self.password = password
         self.role = role
+        self.preferred_genres = preferred_genres or ""
 
     @staticmethod
     def get(user_id):
@@ -20,7 +21,7 @@ class User(UserMixin):
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT id, username, email, password, role FROM users WHERE id=?",
+            "SELECT id, username, email, password, role, preferred_genres FROM users WHERE id=?",
             (user_id,)
         )
 
@@ -62,7 +63,7 @@ class User(UserMixin):
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT id, username, email, password, role FROM users ORDER BY id DESC LIMIT ?",
+            "SELECT id, username, email, password, role, preferred_genres FROM users ORDER BY id DESC LIMIT ?",
             (limit,)
         )
 

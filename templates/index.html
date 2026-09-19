@@ -6,7 +6,7 @@
     <title>Anime Recommendation System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body data-auth="{{ '1' if current_user.is_authenticated else '0' }}">
+<body data-auth="{{ '1' if current_user.is_authenticated else '0' }}" data-has-genres="{{ '1' if current_user.is_authenticated and current_user.preferred_genres else '0' }}">
 
 <div class="container">
 
@@ -30,6 +30,14 @@
             {% if current_user.is_authenticated %}
                 <div class="dropdown-item">&#128075; {{ current_user.username }}</div>
                 <div class="dropdown-item">&#128737; Role: {{ current_user.role }}</div>
+
+                <div class="dropdown-item">
+                    <a href="{{ url_for('main.profile') }}">&#128100; Profile & Settings</a>
+                </div>
+
+                <div class="dropdown-item">
+                    <a href="javascript:void(0)" onclick="openOnboardingModal()">&#127917; Preferred Genres</a>
+                </div>
 
                 <div class="dropdown-item">
                     <a href="{{ url_for('main.top_rankings') }}">&#127942; Top Rankings</a>
@@ -256,7 +264,15 @@
 {% endfor %}
 </div>
 {% else %}
-<p class="empty-note">No favorites yet. Add anime from search or rankings.</p>
+<div class="empty-state-card">
+    <div class="empty-state-icon">&#10084;&#65039;</div>
+    <h3>Your Favorites Collection is Empty</h3>
+    <p>You haven't added any anime to your favorites yet. Mark the masterworks you love most to build your personal taste profile!</p>
+    <div class="empty-state-actions">
+        <a href="{{ url_for('main.top_rankings') }}" class="action-pill small">&#127942; Explore Top Rankings</a>
+        <a href="{{ url_for('main.home') }}" class="action-pill ghost small">&#128269; Search Anime</a>
+    </div>
+</div>
 {% endif %}
 </div>
 {% endif %}
@@ -278,7 +294,15 @@
 {% endfor %}
 </div>
 {% else %}
-<p class="empty-note">No watchlist items yet. Add anime from search or rankings.</p>
+<div class="empty-state-card">
+    <div class="empty-state-icon">&#128151;</div>
+    <h3>Your Watchlist is Empty</h3>
+    <p>Never lose track of what to watch next. Save promising series directly to your watchlist as you browse!</p>
+    <div class="empty-state-actions">
+        <a href="{{ url_for('main.top_rankings') }}" class="action-pill small">&#127942; Discover Top Rated</a>
+        <a href="{{ url_for('main.home') }}" class="action-pill ghost small">&#128269; Search Anime</a>
+    </div>
+</div>
 {% endif %}
 </div>
 {% endif %}
@@ -321,6 +345,65 @@
 </form>
 </div>
 </div>
+
+<!-- ONBOARDING PREFERENCE MODAL -->
+<div id="onboardingModal" class="modal hidden">
+    <div class="modal-content onboarding-modal-content">
+        <span class="close" onclick="closeOnboardingModal()">&times;</span>
+        <h2>&#127881; Welcome to Anime Discovery!</h2>
+        <p class="modal-sub">Pick your favorite genres to personalize your recommendations:</p>
+        
+        <div class="genre-chips-container" id="onboardingGenreChips">
+            <!-- Dynamically populated chips -->
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" class="action-pill ghost" onclick="closeOnboardingModal()">Skip for Now</button>
+            <button type="button" class="action-pill" id="onboardingSaveBtn" onclick="saveOnboardingGenres()">Save & Start Exploring</button>
+        </div>
+    </div>
+</div>
+
+<!-- GLOBAL LOADING STATE OVERLAY -->
+<div id="globalLoadingOverlay" class="loading-overlay hidden">
+    <div class="loading-box">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Searching the Anime Universe...</p>
+    </div>
+</div>
+
+<!-- SITE FOOTER -->
+<footer class="site-footer">
+    <div class="footer-container">
+        <div class="footer-col brand-col">
+            <h3>&#127884; Anime Recommendation</h3>
+            <p>A fast, modern anime discovery engine indexing over 7,400+ titles with live AniList GraphQL & Jikan REST API fallbacks.</p>
+            <p class="copyright">&copy; 2026 Anime Recommendation System. Designed for anime fans.</p>
+        </div>
+        <div class="footer-col links-col">
+            <h4>Explore</h4>
+            <ul>
+                <li><a href="{{ url_for('main.home') }}">Home Discovery</a></li>
+                <li><a href="{{ url_for('main.top_rankings') }}">Top Rankings</a></li>
+                <li><a href="{{ url_for('main.about') }}">About & FAQ</a></li>
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('main.profile') }}">My Profile</a></li>
+                <li><a href="{{ url_for('main.watchlist') }}">My Watchlist</a></li>
+                <li><a href="{{ url_for('main.favorites') }}">My Favorites</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="footer-col legal-col">
+            <h4>Legal & Transparency</h4>
+            <ul>
+                <li><a href="{{ url_for('main.disclaimer') }}">Copyright Disclaimer</a></li>
+                <li><a href="{{ url_for('main.privacy') }}">Privacy Policy</a></li>
+                <li><a href="{{ url_for('main.terms') }}">Terms of Service</a></li>
+                <li><a href="{{ url_for('main.about') }}#faq">Help Center</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 

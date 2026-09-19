@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal & Compliance | Anime Recommendation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="legal-page-body">
+
+<div class="container legal-shell">
+    <div class="legal-header">
+        <a href="{{ url_for('main.home') }}" class="back-link">&#8592; Return to Anime App</a>
+        <h1>&#9878;&#65039; Legal & Compliance Center</h1>
+        <p class="legal-subtitle">Transparency, copyright attribution, and privacy practices for our anime discovery service.</p>
+    </div>
+
+    <div class="legal-nav">
+        <a href="#disclaimer" class="legal-nav-pill {% if active_tab == 'disclaimer' %}active{% endif %}">Copyright Disclaimer</a>
+        <a href="#privacy" class="legal-nav-pill {% if active_tab == 'privacy' %}active{% endif %}">Privacy Policy</a>
+        <a href="#terms" class="legal-nav-pill {% if active_tab == 'terms' %}active{% endif %}">Terms of Service</a>
+        <a href="#cookies" class="legal-nav-pill">Cookie Notice</a>
+    </div>
+
+    <!-- DISCLAIMER & COPYRIGHT -->
+    <section id="disclaimer" class="legal-card">
+        <h2>&#128227; Copyright Disclaimer & Data Attribution</h2>
+        <p class="effective-date">Last Updated: September 2026</p>
+
+        <p><strong>1. Non-Commercial & Educational Use:</strong><br>
+        The <em>Anime Recommendation System</em> is an open-source, educational discovery platform designed to help anime enthusiasts find and organize titles they enjoy. We do <strong>not</strong> stream, host, or store any video files or copyrighted media on our servers.</p>
+
+        <p><strong>2. Third-Party Intellectual Property:</strong><br>
+        All anime titles, character names, cover art posters, and synopses displayed across this application are the copyrighted property and trademarks of their respective creators, animation studios, manga authors, and authorized distributors (such as Toei Animation, MAPPA, Studio Ghibli, Aniplex, Crunchyroll, etc.).</p>
+
+        <p><strong>3. Data Sources & APIs:</strong><br>
+        Metadata, community ratings, and live search results are powered by public developer APIs:
+        </p>
+        <ul>
+            <li><strong>AniList GraphQL API:</strong> (<a href="https://anilist.co" target="_blank" rel="noopener">AniList.co</a>) — Live anime status, seasonal trends, and cover images.</li>
+            <li><strong>Jikan REST API:</strong> (<a href="https://jikan.moe" target="_blank" rel="noopener">Jikan.moe</a>) — Unofficial MyAnimeList (MAL) open-source gateway.</li>
+            <li><strong>Curated Local Dataset:</strong> 7,400+ indexed titles for rapid offline matching.</li>
+        </ul>
+
+        <p><strong>4. DMCA & Removal Requests:</strong><br>
+        If you are a copyright owner or authorized agent and believe that any metadata or link infringes your rights, please reach out via our contact channels and we will promptly address your inquiry.</p>
+    </section>
+
+    <!-- PRIVACY POLICY -->
+    <section id="privacy" class="legal-card">
+        <h2>&#128274; Privacy Policy</h2>
+        <p class="effective-date">Last Updated: September 2026</p>
+
+        <p>Your privacy is important to us. This policy outlines how information is collected, stored, and protected.</p>
+
+        <h3>1. Information We Collect</h3>
+        <ul>
+            <li><strong>Account Data:</strong> When you register an account, we collect a username, an email address, and a password.</li>
+            <li><strong>User Preferences:</strong> Your saved Favorites, personal Watchlist, and preferred genres to power tailored recommendations.</li>
+            <li><strong>Technical Telemetry:</strong> Standard web server access logs for performance monitoring and error logging.</li>
+        </ul>
+
+        <h3>2. Password Security & Cryptography</h3>
+        <p>Passwords are never stored in plaintext. All passwords are encrypted using one-way salted cryptographic hashing algorithms (PBKDF2 / scrypt via Werkzeug Security) prior to database insertion. We have no ability to view or reveal your plain password.</p>
+
+        <h3>3. Data Sharing & Third Parties</h3>
+        <p>We do not sell, rent, monetize, or trade your personal information with any third parties or marketing networks. Emails are strictly used for authentication and password reset verification codes.</p>
+
+        <h3>4. Data Deletion</h3>
+        <p>You maintain full ownership of your data. You may delete your account and all associated Watchlist and Favorites entries at any time directly from your <a href="{{ url_for('main.profile') }}">Account Profile Settings</a>.</p>
+    </section>
+
+    <!-- TERMS OF SERVICE -->
+    <section id="terms" class="legal-card">
+        <h2>&#128220; Terms of Service</h2>
+        <p class="effective-date">Last Updated: September 2026</p>
+
+        <h3>1. Acceptance of Terms</h3>
+        <p>By creating an account or using the Anime Recommendation System, you agree to comply with these terms. If you disagree, please discontinue use of the service.</p>
+
+        <h3>2. Acceptable Conduct</h3>
+        <p>Users agree not to attempt automated denial-of-service (DoS) attacks, scrape server endpoints excessively, or attempt unauthorized access to other user accounts or admin consoles.</p>
+
+        <h3>3. Account Responsibility</h3>
+        <p>You are responsible for maintaining the confidentiality of your credentials. Notify us immediately if you suspect unauthorized access to your account.</p>
+
+        <h3>4. Disclaimer of Warranty</h3>
+        <p>This service is provided "as-is" and "as available" without warranty of any kind. While we strive for high uptime and accurate recommendations, we make no guarantees regarding data completeness or API availability.</p>
+    </section>
+
+    <!-- COOKIE POLICY -->
+    <section id="cookies" class="legal-card">
+        <h2>&#127850; Cookie Notice</h2>
+        <p class="effective-date">Last Updated: September 2026</p>
+
+        <p>We believe in minimal, privacy-first tracking:</p>
+        <ul>
+            <li><strong>Essential Session Cookies Only:</strong> We only utilize a first-party HTTP session cookie to securely keep you logged in between page visits.</li>
+            <li><strong>No Tracking or Advertising Cookies:</strong> We do not deploy third-party advertising pixels, analytics trackers, or fingerprinting scripts.</li>
+        </ul>
+    </section>
+
+    <div class="legal-footer-nav">
+        <a href="{{ url_for('main.home') }}" class="action-pill">&#127968; Back to Home</a>
+        <a href="{{ url_for('main.about') }}" class="action-pill ghost">&#128218; About Platform & FAQ</a>
+    </div>
+</div>
+
+</body>
+</html>

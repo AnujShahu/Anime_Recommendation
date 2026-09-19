@@ -500,4 +500,131 @@ document.addEventListener("DOMContentLoaded", function () {
             setTimeout(() => message.remove(), 300);
         }, 2500);
     });
+
+    // ==========================================
+    // ONBOARDING & PREFERRED GENRES
+    // ==========================================
+    const POPULAR_GENRES = [
+        "Action", "Adventure", "Comedy", "Drama", "Fantasy", 
+        "Horror", "Mystery", "Romance", "Sci-Fi", "Slice of Life", 
+        "Sports", "Supernatural", "Thriller", "Psychological", "Mecha", "Music"
+    ];
+
+    function renderGenreChips(containerId, initialSelected = []) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = "";
+
+        const selectedSet = new Set(initialSelected.map(g => g.trim().toLowerCase()));
+
+        POPULAR_GENRES.forEach(genre => {
+            const chip = document.createElement("div");
+            chip.className = "genre-chip" + (selectedSet.has(genre.toLowerCase()) ? " active" : "");
+            chip.textContent = genre;
+            chip.dataset.genre = genre;
+            chip.addEventListener("click", () => {
+                chip.classList.toggle("active");
+            });
+            container.appendChild(chip);
+        });
+    }
+
+    function getSelectedChips(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return [];
+        const activeChips = container.querySelectorAll(".genre-chip.active");
+        return Array.from(activeChips).map(c => c.dataset.genre);
+    }
+
+    const onboardingModal = document.getElementById("onboardingModal");
+    const genreModal = document.getElementById("genreModal");
+
+    window.openOnboardingModal = function() {
+        if (!onboardingModal) return;
+        renderGenreChips("onboardingGenreChips", []);
+        openModal(onboardingModal);
+    };
+
+    window.closeOnboardingModal = function() {
+        if (onboardingModal) closeModal(onboardingModal);
+        sessionStorage.setItem("onboarding_dismissed", "1");
+    };
+
+    window.saveOnboardingGenres = async function() {
+        const selected = getSelectedChips("onboardingGenreChips");
+        if (selected.length === 0) {
+            showFlashMessage("Please pick at least one genre!");
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/save-preferences", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ genres: selected })
+            });
+            const data = await res.json();
+            if (data.ok) {
+                closeModal(onboardingModal);
+                showFlashMessage("Preferences saved! Tailoring your feed...");
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showFlashMessage(data.message || "Failed to save preferences.");
+            }
+        } catch (e) {
+            showFlashMessage("An error occurred while saving.");
+        }
+    };
+
+    // Profile page genre editor
+    window.openGenreEditor = function() {
+        if (!genreModal) return;
+        const initial = window.INITIAL_USER_GENRES || [];
+        renderGenreChips("profileGenreChips", initial);
+        openModal(genreModal);
+    };
+
+    window.closeGenreEditor = function() {
+        if (genreModal) closeModal(genreModal);
+    };
+
+    window.saveSelectedGenres = async function() {
+        const selected = getSelectedChips("profileGenreChips");
+        try {
+            const res = await fetch("/api/save-preferences", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ genres: selected })
+            });
+            const data = await res.json();
+            if (data.ok) {
+                closeModal(genreModal);
+                showFlashMessage("Preferences updated successfully!");
+                setTimeout(() => window.location.reload(), 800);
+            } else {
+                showFlashMessage(data.message || "Error updating preferences.");
+            }
+        } catch (e) {
+            showFlashMessage("Network error saving preferences.");
+        }
+    };
+
+    // Auto-prompt onboarding for new users if authenticated and no genres
+    const body = document.body;
+    if (body.dataset.auth === "1" && body.dataset.hasGenres === "0" && !sessionStorage.getItem("onboarding_dismissed")) {
+        setTimeout(() => {
+            window.openOnboardingModal();
+        }, 800);
+    }
+
+    // Loading overlay for search forms
+    const globalLoading = document.getElementById("globalLoadingOverlay");
+    const recommendForms = document.querySelectorAll("form[action*='/recommend']");
+    recommendForms.forEach(form => {
+        form.addEventListener("submit", () => {
+            if (globalLoading) {
+                globalLoading.classList.remove("hidden");
+            }
+        });
+    });
 });

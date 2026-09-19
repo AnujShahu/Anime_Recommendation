@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ stats.username }}'s Profile | Anime Recommendation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="profile-page-body">
+
+<div class="container profile-shell">
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="flash-container" id="flashContainer">
+        {% for message in messages %}
+        <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="profile-header-bar">
+        <a href="{{ url_for('main.home') }}" class="back-link">&#8592; Back to Home</a>
+        <div class="header-actions">
+            <a href="{{ url_for('auth.logout') }}" class="action-pill ghost small">&#128682; Logout</a>
+        </div>
+    </div>
+
+    <!-- PROFILE HERO CARD -->
+    <div class="profile-card hero-profile">
+        <div class="profile-avatar">
+            <span class="avatar-letter">{{ stats.username[:1].upper() }}</span>
+        </div>
+        <div class="profile-info">
+            <h2>{{ stats.username }}</h2>
+            <p class="profile-email">&#9993;&#65039; {{ stats.email }}</p>
+            <div class="profile-badges">
+                <span class="badge role-badge role-{{ stats.role }}">&#128737; {{ stats.role|capitalize }}</span>
+                <span class="badge">Member #{{ stats.id }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATS OVERVIEW TILES -->
+    <div class="profile-stats-grid">
+        <div class="profile-stat-tile">
+            <div class="stat-icon">&#10084;&#65039;</div>
+            <div class="stat-meta">
+                <span class="stat-number">{{ stats.favorites_count }}</span>
+                <span class="stat-label">Favorites Saved</span>
+            </div>
+            <a href="{{ url_for('main.favorites') }}" class="stat-link">View Favorites &#8594;</a>
+        </div>
+
+        <div class="profile-stat-tile">
+            <div class="stat-icon">&#128151;</div>
+            <div class="stat-meta">
+                <span class="stat-number">{{ stats.watchlist_count }}</span>
+                <span class="stat-label">Watchlist Queue</span>
+            </div>
+            <a href="{{ url_for('main.watchlist') }}" class="stat-link">View Watchlist &#8594;</a>
+        </div>
+
+        <div class="profile-stat-tile wide">
+            <div class="stat-icon">&#127917;</div>
+            <div class="stat-meta">
+                <span class="stat-label">Preferred Genres</span>
+                <div class="preferred-genres-row">
+                    {% if stats.preferred_genres %}
+                        {% for g in stats.preferred_genres %}
+                        <span class="genre-pill-tag">{{ g }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="empty-genre-hint">No genres selected yet.</span>
+                    {% endif %}
+                </div>
+            </div>
+            <button type="button" class="action-pill small ghost" onclick="openGenreEditor()">&#9998; Edit Genres</button>
+        </div>
+    </div>
+
+    <!-- SETTINGS FORMS -->
+    <div class="profile-forms-grid">
+        <!-- CHANGE PASSWORD -->
+        <div class="profile-form-card">
+            <h3>&#128272; Change Password</h3>
+            <p class="form-desc">Keep your account safe with a strong password.</p>
+            <form method="POST" action="{{ url_for('main.change_password') }}">
+                <div class="form-group">
+                    <label>Current Password</label>
+                    <input type="password" name="current_password" placeholder="Enter current password" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" name="new_password" placeholder="Min. 6 characters" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password</label>
+                    <input type="password" name="confirm_password" placeholder="Repeat new password" required>
+                </div>
+                <button type="submit" class="action-pill">Update Password</button>
+            </form>
+        </div>
+
+        <!-- DANGER ZONE -->
+        <div class="profile-form-card danger-card">
+            <h3 class="danger-title">&#9888;&#65039; Danger Zone</h3>
+            <p class="form-desc">Deleting your account removes all your favorites, watchlist items, and profile permanently.</p>
+            <form method="POST" action="{{ url_for('main.delete_account') }}" onsubmit="return confirm('Are you completely sure? This cannot be undone.');">
+                <div class="form-group">
+                    <label>Type <strong>DELETE</strong> to confirm:</label>
+                    <input type="text" name="confirm_delete" placeholder="DELETE" required>
+                </div>
+                <button type="submit" class="action-pill danger-btn">&#128465; Delete My Account</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<!-- GENRE PREFERENCE MODAL -->
+<div id="genreModal" class="modal hidden">
+    <div class="modal-content onboarding-modal-content">
+        <span class="close" onclick="closeGenreEditor()">&times;</span>
+        <h2>&#127917; Select Your Favorite Genres</h2>
+        <p class="modal-sub">Pick the styles of anime you love to tailor your recommendations:</p>
+        
+        <div class="genre-chips-container" id="profileGenreChips">
+            <!-- Dynamically populated / chips -->
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" class="action-pill ghost" onclick="closeGenreEditor()">Cancel</button>
+            <button type="button" class="action-pill" id="saveGenresBtn" onclick="saveSelectedGenres()">Save Preferences</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const INITIAL_USER_GENRES = {{ stats.preferred_genres | tojson }};
+</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

@@ -18,7 +18,7 @@ def create_app():
 
     app.config["SECRET_KEY"] = "super-secret-key-change-this"
 
-    app.config["CACHE_TYPE"] = "simple"
+    app.config["CACHE_TYPE"] = "SimpleCache"
     app.config["CACHE_DEFAULT_TIMEOUT"] = 300
     cache.init_app(app)
 

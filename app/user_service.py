@@ -18,10 +18,16 @@ def init_user_db():
             username TEXT NOT NULL,
             email TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
-            role TEXT DEFAULT 'user'
+            role TEXT DEFAULT 'user',
+            preferred_genres TEXT DEFAULT ''
         )
         """
     )
+
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN preferred_genres TEXT DEFAULT ''")
+    except Exception:
+        pass
 
     cursor.execute(
         """
@@ -73,7 +79,7 @@ class UserService:
 
         try:
             cursor.execute(
-                "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, 'user')",
+                "INSERT INTO users (username, email, password, role, preferred_genres) VALUES (?, ?, ?, 'user', '')",
                 (username, email, hashed_password),
             )
             conn.commit()
@@ -88,7 +94,7 @@ class UserService:
         conn = sqlite3.connect(USER_DB_PATH)
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT id, username, email, password, role FROM users WHERE email=?",
+            "SELECT id, username, email, password, role, preferred_genres FROM users WHERE email=?",
             (email,),
         )
         user = cursor.fetchone()
@@ -100,12 +106,82 @@ class UserService:
         conn = sqlite3.connect(USER_DB_PATH)
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT id, username, email, password, role FROM users WHERE id=?",
+            "SELECT id, username, email, password, role, preferred_genres FROM users WHERE id=?",
             (user_id,),
         )
         user = cursor.fetchone()
         conn.close()
         return user
+
+    @staticmethod
+    def get_user_stats(user_id):
+        conn = sqlite3.connect(USER_DB_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT COUNT(*) FROM favorites WHERE user_id=?", (user_id,))
+        favorites_count = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(*) FROM watchlist WHERE user_id=?", (user_id,))
+        watchlist_count = cursor.fetchone()[0]
+
+        cursor.execute("SELECT id, username, email, role, preferred_genres FROM users WHERE id=?", (user_id,))
+        user_row = cursor.fetchone()
+        conn.close()
+
+        if not user_row:
+            return None
+
+        pref_genres = [g.strip() for g in (user_row[4] or "").split(",") if g.strip()]
+        return {
+            "id": user_row[0],
+            "username": user_row[1],
+            "email": user_row[2],
+            "role": user_row[3],
+            "preferred_genres": pref_genres,
+            "favorites_count": favorites_count,
+            "watchlist_count": watchlist_count,
+        }
+
+    @staticmethod
+    def update_preferred_genres(user_id, genres_list):
+        genres_str = ", ".join(genres_list) if isinstance(genres_list, list) else str(genres_list)
+        conn = sqlite3.connect(USER_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET preferred_genres=? WHERE id=?", (genres_str, user_id))
+        conn.commit()
+        conn.close()
+
+    @staticmethod
+    def change_password(user_id, current_password, new_password):
+        conn = sqlite3.connect(USER_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT password FROM users WHERE id=?", (user_id,))
+        row = cursor.fetchone()
+        if not row:
+            conn.close()
+            return False, "User not found."
+
+        current_hash = row[0]
+        if not check_password_hash(current_hash, current_password):
+            conn.close()
+            return False, "Current password is incorrect."
+
+        new_hash = generate_password_hash(new_password)
+        cursor.execute("UPDATE users SET password=? WHERE id=?", (new_hash, user_id))
+        conn.commit()
+        conn.close()
+        return True, "Password updated successfully!"
+
+    @staticmethod
+    def delete_user_account(user_id):
+        conn = sqlite3.connect(USER_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM favorites WHERE user_id=?", (user_id,))
+        cursor.execute("DELETE FROM watchlist WHERE user_id=?", (user_id,))
+        cursor.execute("DELETE FROM users WHERE id=?", (user_id,))
+        conn.commit()
+        conn.close()
+        return True
 
     @staticmethod
     def update_password(email, new_password):

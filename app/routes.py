@@ -223,7 +223,7 @@ def superadmin_update_role():
         flash("User not found.")
         return redirect(url_for("main.superadmin_panel"))
 
-    _, _, user_email, _, user_role = user
+    _, _, user_email, _, user_role, *_ = user
 
     if user_role == "superadmin" and user_email != current_user.email:
         flash("Cannot change another superadmin.")
@@ -437,3 +437,131 @@ def remove_watchlist(anime_id):
         return jsonify({"ok": True, "message": message, "anime_id": anime_id})
     flash(message)
     return redirect(request.referrer or url_for("main.watchlist"))
+
+
+# ================= ERROR HANDLERS =================
+@main.app_errorhandler(404)
+def error_404(e):
+    return render_template(
+        "error.html",
+        status_code=404,
+        error_title="Page Got Isekai'd!",
+        error_subtitle="Looks like this page slipped through a dimensional rift into another universe.",
+        error_quote="“Even in another world, some URLs are just lost forever.”"
+    ), 404
+
+
+@main.app_errorhandler(403)
+def error_403(e):
+    return render_template(
+        "error.html",
+        status_code=403,
+        error_title="Forbidden Jutsu!",
+        error_subtitle="You do not have the required clearance or ninja rank to enter this restricted sector.",
+        error_quote="“Some scrolls are sealed for a reason.”"
+    ), 403
+
+
+@main.app_errorhandler(500)
+def error_500(e):
+    return render_template(
+        "error.html",
+        status_code=500,
+        error_title="Spirit Bomb Overload!",
+        error_subtitle="Our anime servers absorbed too much energy and went down for a quick power-up.",
+        error_quote="“It's over 9000! Our system needs a moment to recharge.”"
+    ), 500
+
+
+# ================= LEGAL & ABOUT PAGES =================
+@main.route("/about")
+def about():
+    return render_template("about.html")
+
+
+@main.route("/privacy")
+def privacy():
+    return render_template("legal.html", active_tab="privacy")
+
+
+@main.route("/terms")
+def terms():
+    return render_template("legal.html", active_tab="terms")
+
+
+@main.route("/disclaimer")
+def disclaimer():
+    return render_template("legal.html", active_tab="disclaimer")
+
+
+@main.route("/faq")
+def faq():
+    return render_template("about.html", scroll_to="faq")
+
+
+# ================= USER PROFILE & SETTINGS =================
+@main.route("/profile")
+@login_required
+def profile():
+    from .user_service import UserService
+    stats = UserService.get_user_stats(current_user.id)
+    return render_template("profile.html", stats=stats)
+
+
+@main.route("/profile/change-password", methods=["POST"])
+@login_required
+def change_password():
+    from .user_service import UserService
+    current_password = request.form.get("current_password")
+    new_password = request.form.get("new_password")
+    confirm_password = request.form.get("confirm_password")
+
+    if not current_password or not new_password or not confirm_password:
+        flash("All password fields are required.")
+        return redirect(url_for("main.profile"))
+
+    if new_password != confirm_password:
+        flash("New passwords do not match.")
+        return redirect(url_for("main.profile"))
+
+    if len(new_password) < 6:
+        flash("New password must be at least 6 characters long.")
+        return redirect(url_for("main.profile"))
+
+    success, message = UserService.change_password(current_user.id, current_password, new_password)
+    flash(message)
+    return redirect(url_for("main.profile"))
+
+
+@main.route("/profile/delete-account", methods=["POST"])
+@login_required
+def delete_account():
+    from .user_service import UserService
+    from flask_login import logout_user
+    confirm = request.form.get("confirm_delete")
+
+    if confirm != "DELETE":
+        flash("Please type DELETE to confirm account removal.")
+        return redirect(url_for("main.profile"))
+
+    user_id = current_user.id
+    logout_user()
+    UserService.delete_user_account(user_id)
+    flash("Your account has been deleted permanently.")
+    return redirect(url_for("main.home"))
+
+
+# ================= ONBOARDING & PREFERENCES =================
+@main.route("/api/save-preferences", methods=["POST"])
+@login_required
+def save_preferences():
+    from .user_service import UserService
+    data = request.get_json() or {}
+    genres = data.get("genres", [])
+
+    if not isinstance(genres, list):
+        return jsonify({"ok": False, "message": "Invalid genres format."}), 400
+
+    UserService.update_preferred_genres(current_user.id, genres)
+    return jsonify({"ok": True, "message": "Preferences saved successfully!"})
+
